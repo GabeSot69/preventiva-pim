@@ -1,2 +1,2 @@
-# preventiva-pim-backend
-Backend do sistema de manutenção preventiva
+# preventiva-pim
+Sistema de manutenção preventiva
