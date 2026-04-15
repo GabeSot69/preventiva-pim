@@ -3,11 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import type { StatusExecucao } from '../types';
+import { StatusExecucao } from './StatusExecucao';
 import { PlanoManutencao } from './PlanoManutencao';
 import { Usuario } from './Usuario';
 import { ItemChecklistExecucao } from './ItemChecklistExecucao';
@@ -23,16 +24,17 @@ export class ExecucaoManutencao {
   @ManyToOne(() => Usuario, { nullable: true, eager: true })
   tecnico?: Usuario;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   data_execucao!: string;
 
-  @Column({ type: 'enum', enum: ['realizada', 'parcial', 'nao_realizada'] })
+  @ManyToOne(() => StatusExecucao, { eager: true })
+  @JoinColumn({ name: 'status_id' })
   status!: StatusExecucao;
 
   @Column({ type: 'text', nullable: true })
   observacoes?: string;
 
-  @Column()
+  @Column({ type: 'boolean' })
   conformidade!: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })

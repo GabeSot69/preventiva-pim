@@ -1,2 +1,10 @@
+export { LoginSchema } from './login.dto';
 export type { LoginDTO } from './login.dto';
+export { RefreshTokenSchema } from './refresh-token.dto';
 export type { RefreshTokenDTO } from './refresh-token.dto';
+export { CriarEquipamentoSchema, AtualizarEquipamentoSchema } from './equipamento.dto';
+export type { CriarEquipamentoDTO, AtualizarEquipamentoDTO } from './equipamento.dto';
+export { CriarPlanoManutencaoSchema, AtualizarPlanoManutencaoSchema } from './plano-manutencao.dto';
+export type { CriarPlanoManutencaoDTO, AtualizarPlanoManutencaoDTO } from './plano-manutencao.dto';
+export { CriarExecucaoManutencaoSchema, AtualizarExecucaoManutencaoSchema } from './execucao-manutencao.dto';
+export type { CriarExecucaoManutencaoDTO, AtualizarExecucaoManutencaoDTO } from './execucao-manutencao.dto';

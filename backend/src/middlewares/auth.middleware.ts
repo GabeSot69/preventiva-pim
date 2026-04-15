@@ -5,7 +5,7 @@ import { Usuario } from '../entities/Usuario';
 import type { JwtPayload } from '../types';
 import { AppError } from '../errors';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_aqui_mude_em_producao';
 
 type RequisicaoComUsuario = Request & { usuario?: Usuario };
 
@@ -23,9 +23,9 @@ export const autenticar: RequestHandler = async (req: RequisicaoComUsuario, res:
 
 		const token = parts[1];
 		let payload: JwtPayload;
-
+		
 		try {
-			payload = jwt.verify(token, JWT_SECRET) as JwtPayload;
+			payload = jwt.verify(token, JWT_SECRET) as unknown as JwtPayload;
 		} catch {
 			return res.status(401).json({ message: 'Token inválido' });
 		}
@@ -50,7 +50,7 @@ export const autorizar = (...perfisPermitidos: string[]): RequestHandler => {
 	return (req: RequisicaoComUsuario, res: Response, next: NextFunction) => {
 		const usuario = req.usuario;
 		if (!usuario) return res.status(401).json({ message: 'Não autenticado' });
-		if (!perfisPermitidos.includes(usuario.perfil)) return res.status(403).json({ message: 'Acesso negado' });
+		if (!perfisPermitidos.includes((usuario.perfil as any)?.chave || (usuario as any).perfil)) return res.status(403).json({ message: 'Acesso negado' });
 		return next();
 	};
 };

@@ -20,7 +20,7 @@ export class PlanoManutencao {
   @ManyToOne(() => Equipamento, (e) => e.planos, { nullable: false, eager: true })
   equipamento!: Equipamento;
 
-  @Column()
+  @Column({ type: 'text' })
   titulo!: string;
 
   @Column({ type: 'text', nullable: true })
@@ -32,7 +32,7 @@ export class PlanoManutencao {
   @ManyToOne(() => Usuario, { nullable: true, eager: true })
   tecnico?: Usuario;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   proxima_em!: string;
 
   @Column({ type: 'boolean', default: true })

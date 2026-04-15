@@ -18,6 +18,23 @@ services:
     networks:
       - app-network
 
+  db_test:
+    image: postgres:16-alpine
+    container_name: preventiva-db-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: preventiva_db_test
+    ports:
+      - "${TEST_DB_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
   backend:
     build:
       context: ./backend
@@ -31,6 +48,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-preventiva_db}
       PORT: ${BACKEND_PORT:-3000}
+      TEST_DB_HOST: db_test
+      TEST_DB_PORT: ${TEST_DB_PORT:-5432}
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     depends_on:
@@ -41,7 +60,6 @@ services:
       - /app/node_modules
     networks:
       - app-network
-    command: npm run dev
 
 volumes:
   postgres_data:

@@ -11,22 +11,22 @@ export class Equipamento {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ unique: true })
+  @Column({ type: 'text', unique: true })
   codigo!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   nome!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   tipo!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   localizacao!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   fabricante?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   modelo?: string;
 
   @Column({ type: 'boolean', default: true })

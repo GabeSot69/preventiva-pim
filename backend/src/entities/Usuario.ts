@@ -2,8 +2,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import type { PerfilUsuario } from '../types';
+import { Perfil } from './Perfil';
 
 @Entity({ name: 'usuario' })
 export class Usuario {
@@ -19,8 +21,9 @@ export class Usuario {
   @Column({ type: 'text' })
   senha_hash!: string;
 
-  @Column({ type: 'enum', enum: ['gestor', 'tecnico', 'supervisor'], default: 'tecnico' })
-  perfil!: PerfilUsuario;
+  @ManyToOne(() => Perfil, { eager: true })
+  @JoinColumn({ name: 'perfil_id' })
+  perfil!: Perfil;
 
   @Column({ type: 'text', nullable: true })
   setor?: string;

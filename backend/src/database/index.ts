@@ -7,6 +7,8 @@ import { PlanoManutencao } from '../entities/PlanoManutencao';
 import { ExecucaoManutencao } from '../entities/ExecucaoManutencao';
 import { ItemChecklistPlano } from '../entities/ItemChecklistPlano';
 import { ItemChecklistExecucao } from '../entities/ItemChecklistExecucao';
+import { Perfil } from '../entities/Perfil';
+import { StatusExecucao } from '../entities/StatusExecucao';
 
 export const AppDataSource = new DataSource({
   type: (process.env.DB_TYPE as any) || 'postgres',
@@ -25,6 +27,8 @@ export const AppDataSource = new DataSource({
     ExecucaoManutencao,
     ItemChecklistPlano,
     ItemChecklistExecucao,
+    Perfil,
+    StatusExecucao,
   ],
   migrations: [],
 });
