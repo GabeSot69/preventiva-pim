@@ -10,9 +10,7 @@ process.env.NODE_ENV = 'test';
 
 import { initializeDatabase, AppDataSource } from '../src/database';
 import app from '../src/server';
-import * as bcrypt from 'bcryptjs';
-import { Usuario } from '../src/entities/Usuario';
-import { Perfil } from '../src/entities/Perfil';
+import { seedBase, seedEquipamento } from './helpers/seed';
 
 let token: string;
 
@@ -20,20 +18,7 @@ beforeAll(async () => {
   await initializeDatabase();
   await AppDataSource.dropDatabase();
   await AppDataSource.synchronize();
-  const repo = AppDataSource.getRepository<Usuario>(Usuario);
-  const perfilRepo = AppDataSource.getRepository<Perfil>(Perfil);
-  const senha = 'senha_test';
-  const hash = await bcrypt.hash(senha, 10);
-  let perfil = await perfilRepo.findOne({ where: { chave: 'gestor' } });
-  if (!perfil) {
-    perfil = perfilRepo.create({ chave: 'gestor', descricao: 'Gestor de testes' } as any) as unknown as Perfil;
-    await perfilRepo.save(perfil as any);
-  }
-  const u = repo.create({ nome: 'Test User', email: 'test@example.com', senha_hash: hash, perfil, ativo: true } as any);
-  await repo.save(u);
-
-  const res = await request(app).post('/autenticacao/login').send({ email: 'test@example.com', senha });
-  token = res.body.tokenAcesso;
+  ({ gestorToken: token } = await seedBase());
 });
 
 afterAll(async () => {
@@ -41,43 +26,51 @@ afterAll(async () => {
 });
 
 describe('Equipamentos CRUD', () => {
-  let createdId: number;
-
-  test('Criar equipamento', async () => {
+  test('POST /equipamentos - criar', async () => {
     const res = await request(app)
-      .post('/equipamentos')
+      .post('/app/equipamentos')
       .set('Authorization', `Bearer ${token}`)
       .send({ codigo: 'EQ-001', nome: 'Motor A', tipo: 'Motor', localizacao: 'Sala 1' });
-
     expect(res.status).toBe(201);
     expect(res.body.id).toBeDefined();
-    createdId = res.body.id;
   });
 
-  test('Listar equipamentos', async () => {
-    const res = await request(app).get('/equipamentos').set('Authorization', `Bearer ${token}`);
+  test('GET /equipamentos - listar', async () => {
+    await seedEquipamento(token);
+    const res = await request(app).get('/app/equipamentos').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBeGreaterThanOrEqual(1);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data.length).toBeGreaterThanOrEqual(1);
   });
 
-  test('Obter equipamento por id', async () => {
-    const res = await request(app).get(`/equipamentos/${createdId}`).set('Authorization', `Bearer ${token}`);
+
+  test('GET /equipamentos/:id - obter por id', async () => {
+    const id = await seedEquipamento(token);
+    const res = await request(app).get(`/app/equipamentos/${id}`).set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(res.body.id).toBe(createdId);
+    expect(res.body.id).toBe(id);
   });
 
-  test('Atualizar equipamento', async () => {
+  test('PUT /equipamentos/:id - atualizar', async () => {
+    const id = await seedEquipamento(token);
     const res = await request(app)
-      .put(`/equipamentos/${createdId}`)
+      .put(`/app/equipamentos/${id}`)
       .set('Authorization', `Bearer ${token}`)
       .send({ nome: 'Motor A v2' });
     expect(res.status).toBe(200);
     expect(res.body.nome).toBe('Motor A v2');
   });
 
-  test('Excluir equipamento', async () => {
-    const res = await request(app).delete(`/equipamentos/${createdId}`).set('Authorization', `Bearer ${token}`);
+  test('DELETE /equipamentos/:id - excluir', async () => {
+    const id = await seedEquipamento(token);
+    const res = await request(app).delete(`/app/equipamentos/${id}`).set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(204);
   });
+
+  test('GET /equipamentos/:id - não encontrado retorna 404', async () => {
+    const res = await request(app).get('/app/equipamentos/999999').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(404);
+  });
 });
+
+

@@ -1,60 +1,50 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-import { AppDataSource } from '../database';
-import { Usuario } from '../entities/Usuario';
 import type { JwtPayload } from '../types';
-import { AppError } from '../errors';
+import { JWT_SECRET } from '../config/jwt';
+import { PerfilChave } from '../constants/perfil';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_aqui_mude_em_producao';
+export const autenticar: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const autorizacao = req.headers.authorization;
+    if (!autorizacao?.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Token não fornecido' });
+    }
 
-type RequisicaoComUsuario = Request & { usuario?: Usuario };
+    const token = autorizacao.split(' ')[1];
+    let payload: JwtPayload;
+    try {
+      payload = jwt.verify(token, JWT_SECRET) as unknown as JwtPayload;
+    } catch {
+      return res.status(401).json({ message: 'Token inválido' });
+    }
 
-export const autenticar: RequestHandler = async (req: RequisicaoComUsuario, res: Response, next: NextFunction) => {
-	try {
-		const autorizacao = req.headers.authorization;
-		if (!autorizacao || !autorizacao.startsWith('Bearer ')) {
-			return res.status(401).json({ message: 'Token não fornecido' });
-		}
+    if (!payload.sub) return res.status(401).json({ message: 'Token inválido' });
+    if (payload.ativo === false) return res.status(401).json({ message: 'Usuário inativo' });
 
-		const parts = autorizacao.split(' ');
-		if (parts.length !== 2) {
-			return res.status(401).json({ message: 'Formato de autorização inválido' });
-		}
-
-		const token = parts[1];
-		let payload: JwtPayload;
-		
-		try {
-			payload = jwt.verify(token, JWT_SECRET) as unknown as JwtPayload;
-		} catch {
-			return res.status(401).json({ message: 'Token inválido' });
-		}
-
-		const idUsuario = payload.sub;
-		if (!idUsuario) return res.status(401).json({ message: 'Token sem sujeito (sub)' });
-
-		const usuarioRepo = AppDataSource.getRepository(Usuario);
-		const usuario = await usuarioRepo.findOne({ where: { id: idUsuario } });
-
-		if (!usuario) return res.status(401).json({ message: 'Usuário não encontrado' });
-		if (!usuario.ativo) return res.status(401).json({ message: 'Usuário inativo' });
-
-		req.usuario = usuario;
-		return next();
-	} catch (err) {
-		return res.status(500).json({ message: 'Erro no middleware de autenticação' });
-	}
+    req.usuario = { 
+      id: payload.sub, 
+      perfil: { chave: payload.perfil as any }, 
+      ativo: payload.ativo ?? true 
+    };
+    return next();
+  } catch {
+    return res.status(500).json({ message: 'Erro no middleware de autenticação' });
+  }
 };
 
-export const autorizar = (...perfisPermitidos: string[]): RequestHandler => {
-	return (req: RequisicaoComUsuario, res: Response, next: NextFunction) => {
-		const usuario = req.usuario;
-		if (!usuario) return res.status(401).json({ message: 'Não autenticado' });
-		if (!perfisPermitidos.includes((usuario.perfil as any)?.chave || (usuario as any).perfil)) return res.status(403).json({ message: 'Acesso negado' });
-		return next();
-	};
+export const autorizar = (...perfisPermitidos: PerfilChave[]): RequestHandler => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const usuario = req.usuario;
+    if (!usuario) return res.status(401).json({ message: 'Não autenticado' });
+    const perfilChave = usuario.perfil?.chave as PerfilChave;
+    if (!perfilChave || !perfisPermitidos.includes(perfilChave)) {
+      return res.status(403).json({ message: 'Acesso negado' });
+    }
+    return next();
+  };
 };
 
-export const ehTecnico: RequestHandler[] = [autenticar, autorizar('tecnico')];
-export const ehSupervisor: RequestHandler[] = [autenticar, autorizar('supervisor')];
-export const ehGestor: RequestHandler[] = [autenticar, autorizar('gestor')];
+export const ehTecnico: RequestHandler[] = [autenticar, autorizar(PerfilChave.TECNICO)];
+export const ehSupervisor: RequestHandler[] = [autenticar, autorizar(PerfilChave.SUPERVISOR)];
+export const ehGestor: RequestHandler[] = [autenticar, autorizar(PerfilChave.GESTOR)];

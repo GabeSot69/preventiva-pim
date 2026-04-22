@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
+import { env } from '../config/env';
 import { Usuario } from '../entities/Usuario';
 import { RefreshToken } from '../entities/RefreshToken';
 import { Equipamento } from '../entities/Equipamento';
@@ -11,14 +12,15 @@ import { Perfil } from '../entities/Perfil';
 import { StatusExecucao } from '../entities/StatusExecucao';
 
 export const AppDataSource = new DataSource({
-  type: (process.env.DB_TYPE as any) || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
-  username: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-  database: process.env.DB_NAME || 'preventiva_db',
-  synchronize: process.env.TYPEORM_SYNC ? process.env.TYPEORM_SYNC === 'true' : true,
-  logging: process.env.TYPEORM_LOGGING === 'true',
+  type: env.DB_TYPE as any,
+  host: env.DB_HOST,
+  port: env.DB_PORT,
+  username: env.DB_USER,
+  password: env.DB_PASSWORD,
+  database: env.DB_NAME,
+  // Desativa auto-sync em teste para controle manual no beforeAll
+  synchronize: env.NODE_ENV === 'test' ? false : (env.NODE_ENV !== 'production'),
+  logging: env.TYPEORM_LOGGING,
   entities: [
     Usuario,
     RefreshToken,

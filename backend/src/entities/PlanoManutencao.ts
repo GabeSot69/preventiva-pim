@@ -29,11 +29,11 @@ export class PlanoManutencao {
   @Column({ type: 'int' })
   periodicidade_dias!: number;
 
-  @ManyToOne(() => Usuario, { nullable: true, eager: true })
+  @ManyToOne(() => Usuario, { nullable: true })
   tecnico?: Usuario;
 
-  @Column({ type: 'timestamptz' })
-  proxima_em!: string;
+  @Column({ type: 'timestamptz', nullable: true })
+  proxima_em?: Date;
 
   @Column({ type: 'boolean', default: true })
   ativo!: boolean;
@@ -49,4 +49,13 @@ export class PlanoManutencao {
 
   @OneToMany(() => ItemChecklistPlano, (item) => item.plano, { cascade: true })
   itens_checklist!: ItemChecklistPlano[];
+
+  calcularProximaData(dataReferencia: Date = new Date()): Date {
+    const proxima = new Date(dataReferencia);
+    proxima.setDate(proxima.getDate() + this.periodicidade_dias);
+    this.proxima_em = proxima;
+    return proxima;
+  }
 }
+
+

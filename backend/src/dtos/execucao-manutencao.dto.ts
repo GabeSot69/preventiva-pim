@@ -9,7 +9,7 @@ export const ItemChecklistExecucaoSchema = z.object({
 export const CriarExecucaoManutencaoSchema = z.object({
   planoId: z.number().int('ID do plano é obrigatório'),
   tecnicoId: z.number().int().optional(),
-  dataExecucao: z.string().optional(),
+  dataExecucao: z.string().datetime({ message: 'Data de execução deve ser uma data ISO válida' }).optional(),
   status: z.enum(['realizada', 'parcial', 'nao_realizada']),
   observacoes: z.string().optional(),
   conformidade: z.boolean(),

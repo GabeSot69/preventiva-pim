@@ -11,7 +11,7 @@ export class ItemChecklistPlano {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => PlanoManutencao, (p) => p.itens_checklist, { nullable: false })
+  @ManyToOne(() => PlanoManutencao, (p) => p.itens_checklist, { nullable: false, onDelete: 'CASCADE' })
   plano!: PlanoManutencao;
 
   @Column({ type: 'text' })

@@ -1,27 +1,31 @@
 import { Repository } from 'typeorm';
-import { AppDataSource } from '../database';
 import { Equipamento } from '../entities/Equipamento';
 import { AtualizarEquipamentoDTO, CriarEquipamentoDTO } from '../dtos';
+import { AppError } from '../errors';
+import { PaginationUtils } from '../utils/pagination';
 
 export class EquipamentoService {
-  private equipamentoRepo: Repository<Equipamento>;
-
-  constructor() {
-    this.equipamentoRepo = AppDataSource.getRepository(Equipamento);
-  }
+  constructor(private equipamentoRepo: Repository<Equipamento>) {}
 
   async criar(dados: CriarEquipamentoDTO) {
     const equipamento = this.equipamentoRepo.create(dados as any);
     return await this.equipamentoRepo.save(equipamento);
   }
 
-  async listar() {
-    return await this.equipamentoRepo.find();
+  async listar(page: number = 1, limit: number = 10) {
+    const skip = PaginationUtils.getSkip(page, limit);
+    const [items, total] = await this.equipamentoRepo.findAndCount({
+      where: { ativo: true },
+      take: limit,
+      skip: skip
+    });
+
+    return PaginationUtils.createResult(items, total, page, limit);
   }
 
   async obterPorId(id: number) {
     const equipamento = await this.equipamentoRepo.findOne({ where: { id } });
-    if (!equipamento) throw new Error('Equipamento não encontrado');
+    if (!equipamento) throw new AppError(404, 'Equipamento não encontrado');
     return equipamento;
   }
 

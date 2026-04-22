@@ -12,7 +12,7 @@ export class ItemChecklistExecucao {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => ExecucaoManutencao, (e) => e.checklist_execucao, { nullable: false })
+  @ManyToOne(() => ExecucaoManutencao, (e) => e.checklist_execucao, { nullable: false, onDelete: 'CASCADE' })
   execucao!: ExecucaoManutencao;
 
   @ManyToOne(() => ItemChecklistPlano, { nullable: false, eager: true })

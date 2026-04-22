@@ -18,14 +18,14 @@ export class ExecucaoManutencao {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => PlanoManutencao, (p) => p.execucoes, { nullable: false, eager: true })
+  @ManyToOne(() => PlanoManutencao, (p) => p.execucoes, { nullable: false })
   plano!: PlanoManutencao;
 
-  @ManyToOne(() => Usuario, { nullable: true, eager: true })
+  @ManyToOne(() => Usuario, { nullable: true })
   tecnico?: Usuario;
 
   @Column({ type: 'timestamptz' })
-  data_execucao!: string;
+  data_execucao!: Date;
 
   @ManyToOne(() => StatusExecucao, { eager: true })
   @JoinColumn({ name: 'status_id' })
@@ -46,3 +46,4 @@ export class ExecucaoManutencao {
   @OneToMany(() => ItemChecklistExecucao, (ci) => ci.execucao, { cascade: true })
   checklist_execucao!: ItemChecklistExecucao[];
 }
+

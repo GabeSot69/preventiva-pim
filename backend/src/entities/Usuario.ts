@@ -3,9 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Perfil } from './Perfil';
+import { RefreshToken } from './RefreshToken';
 
 @Entity({ name: 'usuario' })
 export class Usuario {
@@ -18,11 +21,10 @@ export class Usuario {
   @Column({ type: 'text', unique: true })
   email!: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', select: false })
   senha_hash!: string;
 
-  @ManyToOne(() => Perfil, { eager: true })
-  @JoinColumn({ name: 'perfil_id' })
+  @ManyToOne(() => Perfil, { nullable: false })
   perfil!: Perfil;
 
   @Column({ type: 'text', nullable: true })
@@ -30,4 +32,21 @@ export class Usuario {
 
   @Column({ type: 'boolean', default: true })
   ativo!: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  trocar_senha!: boolean;
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  criadoEm!: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  atualizadoEm!: Date;
+
+  @OneToMany(() => RefreshToken, (token) => token.usuario)
+  refresh_tokens!: RefreshToken[];
+
+  toResponse() {
+    const { senha_hash, refresh_tokens, ...publicData } = this;
+    return publicData;
+  }
 }

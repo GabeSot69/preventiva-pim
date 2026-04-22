@@ -1,61 +1,43 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { EquipamentoService } from '../services/equipamento.service';
-import { AppError } from '../errors';
 import { CriarEquipamentoDTO, AtualizarEquipamentoDTO } from '../dtos';
 
-const service = new EquipamentoService();
+export class EquipamentoController {
+  constructor(private service: EquipamentoService) {}
 
-export const criar = async (req: Request, res: Response) => {
-  try {
-    const dados = req.body as CriarEquipamentoDTO;
-    const result = await service.criar(dados);
-    return res.status(201).json(result);
-  } catch (err) {
-    const erro = err instanceof AppError ? err : new AppError(500, 'Erro ao criar equipamento');
-    return res.status(erro.status).json({ message: erro.message });
-  }
-};
+  criar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(201).json(await this.service.criar(req.body as CriarEquipamentoDTO));
+    } catch (err) { next(err); }
+  };
 
-export const listar = async (req: Request, res: Response) => {
-  try {
-    const result = await service.listar();
-    return res.status(200).json(result);
-  } catch (err) {
-    const erro = err instanceof AppError ? err : new AppError(500, 'Erro ao listar equipamentos');
-    return res.status(erro.status).json({ message: erro.message });
-  }
-};
+  listar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { page, limit } = req.query;
+      return res.status(200).json(await this.service.listar(
+        page ? Number(page) : undefined,
+        limit ? Number(limit) : undefined
+      ));
+    } catch (err) { next(err); }
+  };
 
-export const obterPorId = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const result = await service.obterPorId(id);
-    return res.status(200).json(result);
-  } catch (err) {
-    const erro = err instanceof AppError ? err : new AppError(404, 'Equipamento não encontrado');
-    return res.status(erro.status).json({ message: erro.message });
-  }
-};
 
-export const atualizar = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const dados = req.body as AtualizarEquipamentoDTO;
-    const result = await service.atualizar(id, dados);
-    return res.status(200).json(result);
-  } catch (err) {
-    const erro = err instanceof AppError ? err : new AppError(500, 'Erro ao atualizar equipamento');
-    return res.status(erro.status).json({ message: erro.message });
-  }
-};
+  obterPorId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(200).json(await this.service.obterPorId(Number(req.params.id)));
+    } catch (err) { next(err); }
+  };
 
-export const excluir = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    await service.excluir(id);
-    return res.status(204).send();
-  } catch (err) {
-    const erro = err instanceof AppError ? err : new AppError(500, 'Erro ao excluir equipamento');
-    return res.status(erro.status).json({ message: erro.message });
-  }
-};
+  atualizar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(200).json(await this.service.atualizar(Number(req.params.id), req.body as AtualizarEquipamentoDTO));
+    } catch (err) { next(err); }
+  };
+
+  excluir = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await this.service.excluir(Number(req.params.id));
+      return res.status(204).send();
+    } catch (err) { next(err); }
+  };
+}

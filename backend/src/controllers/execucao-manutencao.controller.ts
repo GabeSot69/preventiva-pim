@@ -1,55 +1,42 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { ExecucaoManutencaoService } from '../services/execucao-manutencao.service';
-import type { CriarExecucaoManutencaoDTO, AtualizarExecucaoManutencaoDTO } from '../dtos';
+import { CriarExecucaoManutencaoDTO, AtualizarExecucaoManutencaoDTO } from '../dtos';
 
-const service = new ExecucaoManutencaoService();
+export class ExecucaoManutencaoController {
+  constructor(private service: ExecucaoManutencaoService) {}
 
-export const criarExecucao = async (req: Request, res: Response) => {
-  try {
-    const dados = req.body as CriarExecucaoManutencaoDTO;
-    const result = await service.criar(dados);
-    return res.status(201).json(result);
-  } catch (erro: any) {
-    return res.status(erro.status || 500).json({ message: erro.message || 'Erro ao criar execução' });
-  }
-};
+  criar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(201).json(await this.service.criar(req.body as CriarExecucaoManutencaoDTO));
+    } catch (err) { next(err); }
+  };
 
-export const listarExecucoes = async (req: Request, res: Response) => {
-  try {
-    const result = await service.listar();
-    return res.status(200).json(result);
-  } catch (erro: any) {
-    return res.status(erro.status || 500).json({ message: erro.message || 'Erro ao listar execuções' });
-  }
-};
+  listar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { page, limit } = req.query;
+      return res.status(200).json(await this.service.listar(
+        page ? Number(page) : undefined,
+        limit ? Number(limit) : undefined
+      ));
+    } catch (err) { next(err); }
+  };
 
-export const obterExecucao = async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(Array.isArray(req.params.id) ? req.params.id[0] : (req.params.id as string), 10);
-    const result = await service.obterPorId(id);
-    return res.status(200).json(result);
-  } catch (erro: any) {
-    return res.status(erro.status || 500).json({ message: erro.message || 'Erro ao obter execução' });
-  }
-};
+  obterPorId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(200).json(await this.service.obterPorId(Number(req.params.id)));
+    } catch (err) { next(err); }
+  };
 
-export const atualizarExecucao = async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(Array.isArray(req.params.id) ? req.params.id[0] : (req.params.id as string), 10);
-    const dados = req.body as AtualizarExecucaoManutencaoDTO;
-    const result = await service.atualizar(id, dados);
-    return res.status(200).json(result);
-  } catch (erro: any) {
-    return res.status(erro.status || 500).json({ message: erro.message || 'Erro ao atualizar execução' });
-  }
-};
+  atualizar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(200).json(await this.service.atualizar(Number(req.params.id), req.body as AtualizarExecucaoManutencaoDTO));
+    } catch (err) { next(err); }
+  };
 
-export const excluirExecucao = async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(Array.isArray(req.params.id) ? req.params.id[0] : (req.params.id as string), 10);
-    await service.excluir(id);
-    return res.status(204).send();
-  } catch (erro: any) {
-    return res.status(erro.status || 500).json({ message: erro.message || 'Erro ao excluir execução' });
-  }
-};
+  excluir = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await this.service.excluir(Number(req.params.id));
+      return res.status(204).send();
+    } catch (err) { next(err); }
+  };
+}

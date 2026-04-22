@@ -1,20 +1,31 @@
 import { Router } from 'express';
-import {
-  criarExecucao,
-  listarExecucoes,
-  obterExecucao,
-  atualizarExecucao,
-  excluirExecucao,
-} from '../controllers/execucao-manutencao.controller';
+import { ExecucaoManutencaoController } from '../controllers/execucao-manutencao.controller';
+import { ExecucaoManutencaoService } from '../services/execucao-manutencao.service';
 import { validateBody } from '../middlewares/validate-body.middleware';
 import { CriarExecucaoManutencaoSchema, AtualizarExecucaoManutencaoSchema } from '../dtos';
+import { autorizar } from '../middlewares/auth.middleware';
+import { AppDataSource } from '../database';
+import { ExecucaoManutencao } from '../entities/ExecucaoManutencao';
+import { StatusExecucao } from '../entities/StatusExecucao';
+import { PlanoManutencao } from '../entities/PlanoManutencao';
+import { Usuario } from '../entities/Usuario';
+import { ItemChecklistPlano } from '../entities/ItemChecklistPlano';
 
 const router = Router();
 
-router.post('/', validateBody(CriarExecucaoManutencaoSchema), criarExecucao);
-router.get('/', listarExecucoes);
-router.get('/:id', obterExecucao);
-router.put('/:id', validateBody(AtualizarExecucaoManutencaoSchema), atualizarExecucao);
-router.delete('/:id', excluirExecucao);
+const service = new ExecucaoManutencaoService(
+  AppDataSource.getRepository(ExecucaoManutencao),
+  AppDataSource.getRepository(StatusExecucao),
+  AppDataSource.getRepository(PlanoManutencao),
+  AppDataSource.getRepository(Usuario),
+  AppDataSource.getRepository(ItemChecklistPlano)
+);
+const controller = new ExecucaoManutencaoController(service);
+
+router.post('/', autorizar('tecnico', 'supervisor'), validateBody(CriarExecucaoManutencaoSchema), controller.criar);
+router.get('/', controller.listar);
+router.get('/:id', controller.obterPorId);
+router.put('/:id', autorizar('tecnico', 'supervisor'), validateBody(AtualizarExecucaoManutencaoSchema), controller.atualizar);
+router.delete('/:id', autorizar('supervisor', 'gestor'), controller.excluir);
 
 export default router;

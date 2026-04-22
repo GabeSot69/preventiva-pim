@@ -1,39 +1,51 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
-import { LoginDTO, RefreshTokenDTO } from '../dtos';
-import { AppError } from '../errors';
+import { UsuarioService } from '../services/usuario.service';
+import { LoginDTO, RefreshTokenDTO, RegistroUsuarioDTO } from '../dtos';
+import { TrocarSenhaDTO } from '../dtos/usuario.dto';
 
-const authService = new AuthService();
+export class AuthController {
+  constructor(
+    private authService: AuthService,
+    private usuarioService: UsuarioService
+  ) {}
 
-export const login = async (req: Request, res: Response) => {
-	try {
-		const { email, senha } = req.body as LoginDTO;
-		const result = await authService.login(email, senha);
-		return res.status(200).json(result);
-	} catch (err) {
-		const erro = err instanceof AppError ? err : new AppError(500, 'Falha no login');
-		return res.status(erro.status).json({ message: erro.message });
-	}
-};
+  registrar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(201).json(await this.usuarioService.registrar(req.body as RegistroUsuarioDTO));
+    } catch (err) { next(err); }
+  };
 
-export const refresh = async (req: Request, res: Response) => {
-	try {
-		const { refreshToken } = req.body as RefreshTokenDTO;
-		const result = await authService.refresh(refreshToken);
-		return res.status(200).json(result);
-	} catch (err) {
-		const erro = err instanceof AppError ? err : new AppError(500, 'Falha ao renovar token');
-		return res.status(erro.status).json({ message: erro.message });
-	}
-};
+  login = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, senha } = req.body as LoginDTO;
+      return res.status(200).json(await this.authService.login(email, senha));
+    } catch (err) { next(err); }
+  };
 
-export const logout = async (req: Request, res: Response) => {
-	try {
-		const { refreshToken } = req.body as RefreshTokenDTO;
-		await authService.revoke(refreshToken);
-		return res.status(204).send();
-	} catch (err) {
-		const erro = err instanceof AppError ? err : new AppError(500, 'Erro ao efetuar logout');
-		return res.status(erro.status).json({ message: erro.message });
-	}
-};
+  refresh = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { refreshToken } = req.body as RefreshTokenDTO;
+      return res.status(200).json(await this.authService.refresh(refreshToken));
+    } catch (err) { next(err); }
+  };
+
+  logout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { refreshToken } = req.body as RefreshTokenDTO;
+      await this.authService.revoke(refreshToken);
+      return res.status(204).send();
+    } catch (err) { next(err); }
+  };
+
+  trocarSenha = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const usuarioId = req.usuario?.id;
+      if (!usuarioId) return res.status(401).json({ message: 'Usuário não autenticado' });
+      
+      const { senhaAtual, novaSenha } = req.body as TrocarSenhaDTO;
+      await this.authService.trocarSenha(usuarioId, senhaAtual, novaSenha);
+      return res.status(204).send();
+    } catch (err) { next(err); }
+  };
+}

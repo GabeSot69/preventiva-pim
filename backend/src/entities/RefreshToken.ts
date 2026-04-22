@@ -18,7 +18,7 @@ export class RefreshToken {
   @Column({ type: 'text' })
   token!: string;
 
-  @ManyToOne(() => Usuario, { nullable: false, eager: true })
+  @ManyToOne(() => Usuario, { nullable: false })
   usuario!: Usuario;
 
   @Column({ type: 'timestamptz', nullable: true })

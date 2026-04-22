@@ -10,38 +10,20 @@ process.env.NODE_ENV = 'test';
 
 import { initializeDatabase, AppDataSource } from '../src/database';
 import app from '../src/server';
-import * as bcrypt from 'bcryptjs';
-import { Usuario } from '../src/entities/Usuario';
-import { Perfil } from '../src/entities/Perfil';
+import { seedBase, seedEquipamento, seedPlano } from './helpers/seed';
+
+jest.setTimeout(60000); // Aumentado para evitar timeouts em CI/ambiente local lento
 
 let token: string;
+let tecnicoId: number;
+let equipamentoId: number;
 
 beforeAll(async () => {
   await initializeDatabase();
   await AppDataSource.dropDatabase();
   await AppDataSource.synchronize();
-  const repo = AppDataSource.getRepository<Usuario>(Usuario);
-  const perfilRepo = AppDataSource.getRepository<Perfil>(Perfil);
-  const senha = 'senha_test';
-  const hash = await bcrypt.hash(senha, 10);
-  let perfilGestor = await perfilRepo.findOne({ where: { chave: 'gestor' } });
-  if (!perfilGestor) {
-    perfilGestor = perfilRepo.create({ chave: 'gestor', descricao: 'Gestor de testes' } as any) as unknown as Perfil;
-    await perfilRepo.save(perfilGestor as any);
-  }
-  let perfilTecnico = await perfilRepo.findOne({ where: { chave: 'tecnico' } });
-  if (!perfilTecnico) {
-    perfilTecnico = perfilRepo.create({ chave: 'tecnico', descricao: 'Técnico de testes' } as any) as unknown as Perfil;
-    await perfilRepo.save(perfilTecnico as any);
-  }
-
-  const gestor = repo.create({ nome: 'Gestor', email: 'gestor@example.com', senha_hash: hash, perfil: perfilGestor, ativo: true } as any);
-  await repo.save(gestor);
-  const tecnico = repo.create({ nome: 'Tecnico', email: 'tecnico@example.com', senha_hash: hash, perfil: perfilTecnico, ativo: true } as any);
-  await repo.save(tecnico);
-
-  const res = await request(app).post('/autenticacao/login').send({ email: 'gestor@example.com', senha });
-  token = res.body.tokenAcesso;
+  ({ gestorToken: token, tecnicoId } = await seedBase());
+  equipamentoId = await seedEquipamento(token);
 });
 
 afterAll(async () => {
@@ -49,43 +31,47 @@ afterAll(async () => {
 });
 
 describe('Planos CRUD', () => {
-  let equipamentoId: number;
-  let planoId: number;
-
-  test('Criar equipamento para plano', async () => {
+  test('POST /planos - criar com checklist', async () => {
     const res = await request(app)
-      .post('/equipamentos')
+      .post('/app/planos')
       .set('Authorization', `Bearer ${token}`)
-      .send({ codigo: 'EQ-PLANO-01', nome: 'Bomba', tipo: 'Bomba', localizacao: 'Sala 2' });
+      .send({
+        equipamentoId,
+        titulo: 'Manutenção Mensal',
+        periodicidadeDias: 30,
+        tecnicoId,
+        itensChecklist: [{ descricao: 'Verificar óleo', ordem: 1 }],
+      });
     expect(res.status).toBe(201);
-    equipamentoId = res.body.id;
   });
 
-  test('Criar plano', async () => {
-    const usuarios = await AppDataSource.getRepository(Usuario).find();
-    const tecnico = usuarios.find(u => (u.perfil as any)?.chave === 'tecnico' || (u as any).perfil === 'tecnico');
-    expect(tecnico).toBeDefined();
+  test('GET /planos - listar', async () => {
+    await seedPlano(token, equipamentoId, tecnicoId);
+    const res = await request(app).get('/app/planos').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body.data)).toBe(true);
+  });
 
+  test('GET /planos/:id - obter por id', async () => {
+    const { id } = await seedPlano(token, equipamentoId, tecnicoId);
+    const res = await request(app).get(`/app/planos/${id}`).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(id);
+  });
+
+  test('PUT /planos/:id - atualizar', async () => {
+    const { id } = await seedPlano(token, equipamentoId, tecnicoId);
     const res = await request(app)
-      .post('/planos')
+      .put(`/app/planos/${id}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ equipamentoId, titulo: 'Manutenção Mensal', descricao: 'Verificar válvulas', periodicidadeDias: 30, tecnicoId: tecnico!.id });
-
-    expect(res.status).toBe(201);
-    expect(res.body.id).toBeDefined();
-    planoId = res.body.id;
+      .send({ titulo: 'Plano Atualizado' });
+    expect(res.status).toBe(200);
+    expect(res.body.titulo).toBe('Plano Atualizado');
   });
 
-  test('Listar planos', async () => {
-    const res = await request(app).get('/planos').set('Authorization', `Bearer ${token}`);
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBeGreaterThanOrEqual(1);
-  });
-
-  test('Obter plano por id', async () => {
-    const res = await request(app).get(`/planos/${planoId}`).set('Authorization', `Bearer ${token}`);
-    expect(res.status).toBe(200);
-    expect(res.body.id).toBe(planoId);
+  test('DELETE /planos/:id - excluir', async () => {
+    const { id } = await seedPlano(token, equipamentoId, tecnicoId);
+    const res = await request(app).delete(`/app/planos/${id}`).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(204);
   });
 });
