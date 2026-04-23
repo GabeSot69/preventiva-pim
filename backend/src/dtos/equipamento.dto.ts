@@ -7,6 +7,7 @@ export const CriarEquipamentoSchema = z.object({
     localizacao: z.string().min(1, 'Localização é obrigatória'),
     fabricante: z.string().optional(),
     modelo: z.string().optional(),
+    ativo: z.boolean().optional(),
 });
 
 export const AtualizarEquipamentoSchema = CriarEquipamentoSchema.partial();

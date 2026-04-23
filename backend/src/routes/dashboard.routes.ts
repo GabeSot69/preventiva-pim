@@ -6,6 +6,7 @@ import { AppDataSource } from '../database';
 import { PlanoManutencao } from '../entities/PlanoManutencao';
 import { ExecucaoManutencao } from '../entities/ExecucaoManutencao';
 import { Equipamento } from '../entities/Equipamento';
+import { PerfilChave } from '../constants/perfil';
 
 const router = Router();
 
@@ -16,8 +17,8 @@ const service = new DashboardService(
 );
 const controller = new DashboardController(service);
 
-router.get('/metricas', autorizar('supervisor', 'gestor'), controller.getMetrics);
-router.get('/atrasadas', autorizar('supervisor', 'gestor'), controller.getAtrasadas);
-router.get('/disponibilidade', autorizar('supervisor', 'gestor'), controller.getDisponibilidade);
+router.get('/metricas', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getMetrics);
+router.get('/atrasadas', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getAtrasadas);
+router.get('/disponibilidade', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getDisponibilidade);
 
 export default router;

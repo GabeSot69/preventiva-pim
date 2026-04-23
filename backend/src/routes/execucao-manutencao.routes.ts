@@ -10,9 +10,9 @@ import { StatusExecucao } from '../entities/StatusExecucao';
 import { PlanoManutencao } from '../entities/PlanoManutencao';
 import { Usuario } from '../entities/Usuario';
 import { ItemChecklistPlano } from '../entities/ItemChecklistPlano';
+import { PerfilChave } from '../constants/perfil';
 
 const router = Router();
-
 const service = new ExecucaoManutencaoService(
   AppDataSource.getRepository(ExecucaoManutencao),
   AppDataSource.getRepository(StatusExecucao),
@@ -22,10 +22,10 @@ const service = new ExecucaoManutencaoService(
 );
 const controller = new ExecucaoManutencaoController(service);
 
-router.post('/', autorizar('tecnico', 'supervisor'), validateBody(CriarExecucaoManutencaoSchema), controller.criar);
+router.post('/', autorizar(PerfilChave.TECNICO, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), validateBody(CriarExecucaoManutencaoSchema), controller.criar);
 router.get('/', controller.listar);
 router.get('/:id', controller.obterPorId);
-router.put('/:id', autorizar('tecnico', 'supervisor'), validateBody(AtualizarExecucaoManutencaoSchema), controller.atualizar);
-router.delete('/:id', autorizar('supervisor', 'gestor'), controller.excluir);
+router.put('/:id', autorizar(PerfilChave.TECNICO, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), validateBody(AtualizarExecucaoManutencaoSchema), controller.atualizar);
+router.delete('/:id', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.excluir);
 
 export default router;

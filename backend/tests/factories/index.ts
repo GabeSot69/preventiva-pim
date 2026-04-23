@@ -5,15 +5,20 @@ import { Usuario } from '../../src/entities/Usuario';
 
 export const equipamentoFactory = Factory.define<Equipamento>(({ sequence }) => ({
   id: sequence,
+  codigo: `EQ-${sequence}`,
   nome: `Equipamento ${sequence}`,
+  tipo: 'Industrial',
+  localizacao: 'Galpão A',
+  fabricante: 'Fabricante X',
+  modelo: 'Modelo Y',
   ativo: true,
-  data_aquisicao: new Date(),
   planos: [],
 }));
 
 export const planoFactory = Factory.define<PlanoManutencao>(({ sequence }) => ({
   id: sequence,
   titulo: `Plano ${sequence}`,
+  descricao: `Descrição do plano ${sequence}`,
   periodicidade_dias: 30,
   ativo: true,
   proxima_em: new Date(),
@@ -21,5 +26,7 @@ export const planoFactory = Factory.define<PlanoManutencao>(({ sequence }) => ({
   equipamento: {} as any,
   tecnico: undefined,
   execucoes: [],
+  criadoEm: new Date(),
+  atualizadoEm: new Date(),
   calcularProximaData: () => new Date(),
 }));

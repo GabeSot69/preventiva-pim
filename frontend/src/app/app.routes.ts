@@ -1,7 +1,15 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'app/planos', pathMatch: 'full' },
+  { path: '', redirectTo: 'app/dashboard', pathMatch: 'full' },
+  { 
+    path: 'login', 
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent) 
+  },
+  { 
+    path: 'app/dashboard', 
+    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent) 
+  },
   { 
     path: 'app/planos', 
     loadComponent: () => import('./pages/planos-list/planos-list.component').then(m => m.PlanosListComponent) 
@@ -18,5 +26,21 @@ export const routes: Routes = [
     path: 'app/execucoes/nova', 
     loadComponent: () => import('./pages/execucao-form/execucao-form.component').then(m => m.ExecucaoFormComponent) 
   },
-  { path: '**', redirectTo: 'app/planos' } 
+  { 
+    path: 'app/calendario', 
+    loadComponent: () => import('./pages/calendario/calendario.component').then(m => m.CalendarioComponent) 
+  },
+  { 
+    path: 'app/equipamentos', 
+    loadComponent: () => import('./pages/equipamentos-list/equipamentos-list.component').then(m => m.EquipamentosListComponent) 
+  },
+  { 
+    path: 'app/equipamentos/novo', 
+    loadComponent: () => import('./pages/equipamentos-form/equipamentos-form.component').then(m => m.EquipamentosFormComponent) 
+  },
+  { 
+    path: 'app/equipamentos/editar/:id', 
+    loadComponent: () => import('./pages/equipamentos-form/equipamentos-form.component').then(m => m.EquipamentosFormComponent) 
+  },
+  { path: '**', redirectTo: 'app/dashboard' } 
 ];

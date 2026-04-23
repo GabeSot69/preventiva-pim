@@ -47,16 +47,16 @@ import { PlanoService } from '../../services/plano.service';
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div *ngFor="let plano of planosFiltrados()" 
              class="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-l-8 flex flex-col justify-between hover:shadow-xl transition-all group"
-             [ngClass]="calcularStatus(plano.data_inicial).border">
+             [ngClass]="calcularStatus(plano.proxima_em).border">
           
           <div>
             <div class="flex justify-between items-start mb-4">
               <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg uppercase">
-                {{ plano.equipamento_id }}
+                ID: {{ plano.equipamento?.id }}
               </span>
-              <span [ngClass]="calcularStatus(plano.data_inicial).cor" 
+              <span [ngClass]="calcularStatus(plano.proxima_em).cor" 
                     class="px-3 py-1 rounded-full text-[10px] font-black border flex items-center gap-1">
-                {{ calcularStatus(plano.data_inicial).icon }} {{ calcularStatus(plano.data_inicial).label }}
+                {{ calcularStatus(plano.proxima_em).icon }} {{ calcularStatus(plano.proxima_em).label }}
               </span>
             </div>
 
@@ -65,20 +65,20 @@ import { PlanoService } from '../../services/plano.service';
             </h3>
             
             <div class="mb-4 min-h-[50px]">
-              <div *ngIf="plano.ultima_observacao" class="bg-gray-50 border-l-4 border-gray-300 p-2 rounded-r-lg">
-                <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Último Relato:</label>
-                <p class="text-sm text-gray-700 italic line-clamp-2">"{{ plano.ultima_observacao }}"</p>
+              <div *ngIf="plano.descricao" class="bg-gray-50 border-l-4 border-gray-300 p-2 rounded-r-lg">
+                <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Descrição:</label>
+                <p class="text-sm text-gray-700 italic line-clamp-2">"{{ plano.descricao }}"</p>
               </div>
             </div>
 
             <div class="space-y-3 mb-6 text-sm">
-              <p class="flex items-center gap-2"><span class="text-gray-400">📅</span> Próxima: <b>{{ plano.data_inicial | date:'dd/MM/yyyy' }}</b></p>
-              <p class="flex items-center gap-2"><span class="text-gray-400">👤</span> Técnico: <b>{{ plano.tecnico_responsavel }}</b></p>
+              <p class="flex items-center gap-2"><span class="text-gray-400">📅</span> Próxima: <b>{{ plano.proxima_em | date:'dd/MM/yyyy' }}</b></p>
+              <p class="flex items-center gap-2"><span class="text-gray-400">👤</span> Técnico: <b>{{ plano.tecnico?.nome || 'Não atribuído' }}</b></p>
             </div>
           </div>
 
           <button [routerLink]="['/app/execucoes/nova']" 
-                  [queryParams]="{ planoId: plano.id, titulo: plano.titulo, tecnico: plano.tecnico_responsavel }"
+                  [queryParams]="{ planoId: plano.id, titulo: plano.titulo, tecnico: plano.tecnico?.nome }"
                   class="w-full py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all">
               Registrar Manutenção
           </button>
@@ -106,7 +106,7 @@ export class PlanosListComponent implements OnInit {
     if (filtro === 'todos') return todos;
 
     return todos.filter(plano => {
-      const status = this.calcularStatus(plano.data_inicial).label;
+      const status = this.calcularStatus(plano.proxima_em).label;
       if (filtro === 'atrasados') return status === 'ATRASADO';
       if (filtro === 'criticos') return status === 'CRÍTICO';
       return true;

@@ -119,3 +119,46 @@ Sistema para gestão de manutenções preventivas de equipamentos industriais, p
 6. Acesse a documentação Swagger em: `http://localhost:3000/docs`.
 
 **Usuário padrão:** `admin@example.com` / `admin123456`
+
+Telas
+
+Tela 1: Login
+Rota: /login
+Formulário reativo com e-mail e senha. Validação em tempo real. Redireciona para o
+dashboard após autenticação.
+Tela 2: Dashboard
+Rota: /app/dashboard
+Quatro cards: manutenções em atraso (proxima_em < hoje), manutenções previstas para os
+próximos 7 dias, percentual de conformidade do mês (realizadas no prazo / total programadas *
+100) e total de execuções registradas no mês. Lista das manutenções atrasadas com nome do
+plano, equipamento, data prevista e dias de atraso em destaque vermelho.
+Tela 3: Calendário de manutenções
+Rota: /app/calendario
+Visão de lista (no calendário gráfico) das manutenções ordenadas por data prevista. Filtros por
+equipamento e por status: atrasadas, desta semana, deste mês, todas. Cada item mostra
+plano, equipamento, data prevista, técnico responsável e status: atrasada (vermelho), hoje
+(laranja), próximos 7 dias (amarelo), no prazo (verde). Botão de registrar a execução
+diretamente a partir do item.
+
+Trio: substituir a lista por um calendário visual mensal com os dias marcados (usando uma
+biblioteca de calendário ou CSS Grid).
+
+Telas 4 e 5: Planos de manutenção
+Rotas: /app/planos e /app/planos/novo, /app/planos/:id
+A listagem exibe todos os planos ativos com equipamento, título, periodicidade e próxima data
+prevista. O formulário de cadastro vincula o plano a um equipamento, define o título, a
+descrição, a periodicidade em dias, o técnico responsável padrão e a data da primeira
+execução (que define o proxima_em inicial). O detalhe do plano exibe o histórico de execuções.
+
+Tela 6: Registro de execucao
+Rota: /app/execucoes/nova
+Formulário de registro de execução. O técnico seleciona o plano (ou chega pela tela de
+calendário), confirma a data de execução, define o status (realizada, parcial, não realizada),
+informa se foi conforme e adiciona observações. Após salvar, o backend recalcula o
+proxima_em do plano e o item some da lista de atrasados se estava atrasado.
+
+Tela 7: Equipamentos
+Rota: /app/equipamentos
+Lista e formulário CRUD de equipamentos. Ao clicar em um equipamento, exibe todos os
+planos de manutenção vinculados a ele com o status de cada um. Formulário com todos os
+campos de identificação do equipamento.

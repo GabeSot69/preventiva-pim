@@ -87,7 +87,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof ZodError) {
     return res.status(400).json({ 
       message: 'Erro de validação', 
-      errors: z.treeifyError(err) 
+      errors: err.format() 
     });
   }
 
@@ -109,7 +109,7 @@ if (env.NODE_ENV !== 'test') {
   initializeDatabase()
     .then(() => runSeed())
     .then(() => {
-      app.listen(PORT, () => logger.info(`Server rodando na porta ${PORT} em modo ${env.NODE_ENV}`));
+      app.listen(PORT, '0.0.0.0', () => logger.info(`Server rodando na porta ${PORT} em modo ${env.NODE_ENV}`));
     })
     .catch((err: any) => {
       logger.fatal({ err }, 'Inicialização falhou');

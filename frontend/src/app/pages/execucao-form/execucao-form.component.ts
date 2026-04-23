@@ -1,10 +1,10 @@
-// frontend\src\app\pages\execucao-form\execucao-form.component.ts
-
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { PlanoService } from '../../services/plano.service';
+import { ExecucaoService } from '../../services/execucao.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-execucao-form',
@@ -19,16 +19,16 @@ import { HttpClient } from '@angular/common/http';
 
       <form [formGroup]="execForm" (ngSubmit)="salvar()" 
             class="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50">
-        
+
         <div class="grid grid-cols-1 gap-6">
-          
+
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Plano de Manutenção</label>
-            <select formControlName="plano_id" 
+            <select formControlName="planoId" 
                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-gray-700 appearance-none">
               <option value="">Selecione o plano...</option>
               <option *ngFor="let p of planos()" [value]="p.id">
-                {{ p.titulo }} (Equipamento: {{ p.equipamento_id }})
+                {{ p.titulo }} (Equipamento: {{ p.equipamento?.nome }})
               </option>
             </select>
           </div>
@@ -36,7 +36,7 @@ import { HttpClient } from '@angular/common/http';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Data da Execução</label>
-              <input type="date" formControlName="data_execucao" 
+              <input type="date" formControlName="dataExecucao" 
                      class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none">
             </div>
 
@@ -46,7 +46,7 @@ import { HttpClient } from '@angular/common/http';
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                {{ tecnicoResponsavel() || 'Buscando responsável...' }}
+                {{ tecnicoNome() || 'Buscando responsável...' }}
               </div>
             </div>
           </div>
@@ -83,7 +83,7 @@ import { HttpClient } from '@angular/common/http';
           </div>
 
           <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <input type="checkbox" formControlName="foi_conforme" id="conforme" 
+            <input type="checkbox" formControlName="conformidade" id="conforme" 
                    class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 transition-all">
             <label for="conforme" class="text-sm font-medium text-gray-700 cursor-pointer">
               Execução em conformidade com o plano?
@@ -116,19 +116,21 @@ export class ExecucaoFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private http = inject(HttpClient);
+  private planoService = inject(PlanoService);
+  private execucaoService = inject(ExecucaoService);
+  private authService = inject(AuthService);
 
   execForm: FormGroup;
   planos = signal<any[]>([]);
-  tecnicoResponsavel = signal<string>('');
+  tecnicoNome = signal<string>('');
   itensChecklist = signal<any[]>([]);
 
   constructor() {
     this.execForm = this.fb.group({
-      plano_id: ['', Validators.required],
-      data_execucao: [new Date().toISOString().substring(0, 10), Validators.required],
+      planoId: ['', Validators.required],
+      dataExecucao: [new Date().toISOString().substring(0, 10), Validators.required],
       status: ['realizada', Validators.required],
-      foi_conforme: [true],
+      conformidade: [true],
       observacoes: ['']
     });
   }
@@ -136,41 +138,27 @@ export class ExecucaoFormComponent implements OnInit {
   ngOnInit(): void {
     this.carregarPlanosAtivos();
 
-    this.execForm.get('plano_id')?.valueChanges.subscribe(id => {
-      const plano = this.planos().find(p => p.id == id);
-      if (plano) {
-        this.tecnicoResponsavel.set(plano.tecnico_responsavel);
-        this.buscarChecklistDoPlano(id);
-      }
+    this.execForm.get('planoId')?.valueChanges.subscribe(id => {
+      if (id) this.buscarDetalhesDoPlano(id);
     });
 
     this.route.queryParams.subscribe(params => {
       if (params['planoId']) {
-        this.execForm.patchValue({ plano_id: Number(params['planoId']) });
+        this.execForm.patchValue({ planoId: Number(params['planoId']) });
       }
     });
   }
 
   carregarPlanosAtivos(): void {
-    this.http.get<any[]>('http://localhost:3000/planos').subscribe({
-      next: (res) => {
-        this.planos.set(res);
-        const idAtual = this.execForm.get('plano_id')?.value;
-        if (idAtual) {
-          const plano = res.find(p => p.id == idAtual);
-          if (plano) {
-            this.tecnicoResponsavel.set(plano.tecnico_responsavel);
-            this.buscarChecklistDoPlano(idAtual);
-          }
-        }
-      }
-    });
+    this.planoService.listar().subscribe(res => this.planos.set(res));
   }
 
-  buscarChecklistDoPlano(planoId: number): void {
-    this.http.get<any[]>(`http://localhost:3000/planos/${planoId}/itens`).subscribe({
-      next: (res) => this.itensChecklist.set(res.map(i => ({ ...i, conforme: true }))),
-      error: () => this.itensChecklist.set([])
+  buscarDetalhesDoPlano(planoId: number): void {
+    this.planoService.obterPorId(planoId).subscribe({
+      next: (res) => {
+        this.tecnicoNome.set(res.tecnico?.nome || this.authService.getUsuario()?.nome);
+        this.itensChecklist.set(res.itens_checklist.map((i: any) => ({ ...i, conforme: true })));
+      }
     });
   }
 
@@ -182,27 +170,25 @@ export class ExecucaoFormComponent implements OnInit {
 
   salvar(): void {
     if (this.execForm.valid) {
-      // AJUSTE: Garantindo o mapeamento explícito dos itens do Checklist
-      const itensMapeados = this.itensChecklist().map(item => ({
-        id: item.id,
+      const checklist = this.itensChecklist().map(item => ({
+        itemId: item.id,
         conforme: item.conforme
       }));
 
-      const dadosParaSalvar = {
+      const payload = {
         ...this.execForm.value,
-        checklists: itensMapeados
+        planoId: Number(this.execForm.value.planoId),
+        tecnicoId: this.authService.getUsuario()?.id,
+        checklist
       };
 
-      // LOG: Verifique no Console do Navegador (F12) se 'checklists' está preenchido
-      console.log("Dados enviados ao Backend:", dadosParaSalvar);
-
-      this.http.post('http://localhost:3000/execucoes', dadosParaSalvar).subscribe({
+      this.execucaoService.criar(payload).subscribe({
         next: () => {
           alert('Execução e Checklist registrados com sucesso!');
           this.router.navigate(['/app/planos']);
         },
         error: (err) => {
-          console.error("Erro no POST:", err);
+          console.error("Erro ao salvar execução:", err);
           alert('Erro ao registrar execução.');
         }
       });

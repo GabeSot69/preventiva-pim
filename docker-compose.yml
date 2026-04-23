@@ -40,24 +40,39 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: preventiva-backend
+    command: npm run dev
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
+      NODE_ENV: development
       DB_HOST: db
-      DB_PORT: ${DB_PORT:-5432}
+      DB_PORT: 5432
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-preventiva_db}
-      PORT: ${BACKEND_PORT:-3000}
-      TEST_DB_HOST: db_test
-      TEST_DB_PORT: ${TEST_DB_PORT:-5432}
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-chave_secreta_muito_longa_e_segura_para_dev}
     ports:
-      - "${BACKEND_PORT:-3000}:3000"
+      - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - ./backend:/app
       - /app/node_modules
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: preventiva-frontend
+    ports:
+      - "${FRONTEND_PORT:-4200}:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
     networks:
       - app-network
 

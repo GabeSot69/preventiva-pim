@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { PlanoService } from '../../services/plano.service';
+import { EquipamentoService } from '../../services/equipamento.service';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-planos-form',
@@ -24,16 +26,16 @@ import { PlanoService } from '../../services/plano.service';
 
       <form [formGroup]="planoForm" (ngSubmit)="salvar()" 
             class="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
-        
+
         <div class="grid grid-cols-1 gap-6">
-          
+
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Equipamento</label>
-            <select formControlName="equipamento_id" 
+            <select formControlName="equipamentoId" 
                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700 appearance-none">
               <option value="">Selecione o equipamento...</option>
-              <option *ngFor="let eq of equipamentos()" [value]="eq.tag">
-                {{ eq.nome }} ({{ eq.tag }})
+              <option *ngFor="let eq of equipamentos()" [value]="eq.id">
+                {{ eq.nome }} ({{ eq.codigo }})
               </option>
             </select>
           </div>
@@ -47,7 +49,7 @@ import { PlanoService } from '../../services/plano.service';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Periodicidade</label>
-              <select formControlName="periodicidade_dias" 
+              <select formControlName="periodicidadeDias" 
                       class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700 appearance-none">
                 <option [value]="30">Mensal (30 dias)</option>
                 <option [value]="90">Trimestral (90 dias)</option>
@@ -56,15 +58,26 @@ import { PlanoService } from '../../services/plano.service';
 
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Data da 1ª Execução</label>
-              <input type="date" formControlName="data_inicial" 
+              <input type="date" formControlName="dataProximaManutencao" 
                      class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700">
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Técnico Responsável Padrão</label>
-            <input type="text" formControlName="tecnico_responsavel" placeholder="Nome do responsável técnico"
-                   class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Técnico Responsável</label>
+            <select formControlName="tecnicoId" 
+                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700 appearance-none">
+              <option value="">Selecione o técnico...</option>
+              <option *ngFor="let user of usuarios()" [value]="user.id">
+                {{ user.nome }}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Descrição</label>
+            <textarea formControlName="descricao" placeholder="Detalhes do plano..."
+                      class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700 h-32"></textarea>
           </div>
 
           <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-50">
@@ -84,39 +97,57 @@ import { PlanoService } from '../../services/plano.service';
 })
 export class PlanosFormComponent implements OnInit {
   private planoService = inject(PlanoService);
+  private equipamentoService = inject(EquipamentoService);
+  private usuarioService = inject(UsuarioService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
 
   planoForm: FormGroup;  
- 
-  equipamentos = signal([
-    { id: '1', nome: 'Gerador Caterpillar', tag: 'GER-01' },
-    { id: '2', nome: 'Compressor de Ar', tag: 'COMP-04' }
-  ]);
+  equipamentos = signal<any[]>([]);
+  usuarios = signal<any[]>([]);
 
   constructor() {
     this.planoForm = this.fb.group({
-      equipamento_id: ['', Validators.required],
+      equipamentoId: ['', Validators.required],
       titulo: ['', [Validators.required, Validators.minLength(5)]],   
-      periodicidade_dias: [30, Validators.required],
-      data_inicial: ['', Validators.required],
-      tecnico_responsavel: ['', Validators.required],
+      periodicidadeDias: [30, Validators.required],
+      dataProximaManutencao: ['', Validators.required],
+      tecnicoId: [''],
       descricao: [''] 
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.carregarEquipamentos();
+    this.carregarUsuarios();
+  }
+
+  carregarEquipamentos() {
+    this.equipamentoService.listar().subscribe(res => this.equipamentos.set(res));
+  }
+
+  carregarUsuarios() {
+    this.usuarioService.listar().subscribe(res => this.usuarios.set(res));
+  }
 
   salvar() {
     if (this.planoForm.valid) {
-      this.planoService.criar(this.planoForm.value).subscribe({
+      const dados = {
+        ...this.planoForm.value,
+        equipamentoId: Number(this.planoForm.value.equipamentoId),
+        periodicidadeDias: Number(this.planoForm.value.periodicidadeDias),
+        tecnicoId: this.planoForm.value.tecnicoId ? Number(this.planoForm.value.tecnicoId) : undefined,
+        dataProximaManutencao: new Date(this.planoForm.value.dataProximaManutencao).toISOString()
+      };
+
+      this.planoService.criar(dados).subscribe({
         next: () => {
           alert('Plano de manutenção cadastrado com sucesso!');
           this.router.navigate(['/app/planos']);
         },
         error: (err) => {
           console.error('Erro ao salvar:', err);
-          alert('Falha ao conectar com o servidor do PIM.');
+          alert('Falha ao salvar plano.');
         }
       });
     }
