@@ -24,7 +24,7 @@ export class Usuario {
   @Column({ type: 'text', select: false })
   senha_hash!: string;
 
-  @ManyToOne(() => Perfil, { nullable: false })
+  @ManyToOne(() => Perfil, { nullable: true })
   perfil!: Perfil;
 
   @Column({ type: 'text', nullable: true })

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +9,7 @@ import { RouterModule } from '@angular/router';
   template: `
     <div class="flex min-h-screen bg-gray-50 text-gray-900 font-sans">
       
-      <aside class="w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm">
+      <aside *ngIf="router.url !== '/login'" class="w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm">
         <div class="p-6">
           <div class="flex items-center gap-3 text-blue-600 mb-10">
             <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg font-bold text-xl">P</div>
@@ -81,4 +81,6 @@ import { RouterModule } from '@angular/router';
     </div>
   `
 })
-export class AppComponent {}
+export class AppComponent {
+  public router = inject(Router);
+}
