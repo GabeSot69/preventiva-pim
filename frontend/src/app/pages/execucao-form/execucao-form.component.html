@@ -1,0 +1,43 @@
+<div class="p-6 max-w-2xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6">Registrar Execução de Manutenção</h1>
+
+  <form [formGroup]="execucaoForm" (ngSubmit)="salvar()" class="bg-white p-6 rounded-xl shadow-md space-y-4">
+    <div>
+      <label class="block text-sm font-medium">Selecionar Plano de Manutenção</label>
+      <select formControlName="plano_id" class="w-full p-2 border rounded-md">
+        <option value="">Selecione o plano...</option>
+        <option *ngFor="let p of planos()" [value]="p.id">{{ p.titulo }} - ({{ p.equipamento_id }})</option>
+      </select>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium">Data da Realização</label>
+        <input type="date" formControlName="data_execucao" class="w-full p-2 border rounded-md">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Status</label>
+        <select formControlName="status" class="w-full p-2 border rounded-md">
+          <option value="realizada">Realizada</option>
+          <option value="parcial">Parcial</option>
+          <option value="não realizada">Não Realizada</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <input type="checkbox" formControlName="conforme" id="conforme">
+      <label for="conforme" class="text-sm font-medium">Manutenção em Conformidade?</label>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">Observações Técnicas</label>
+      <textarea formControlName="observacoes" class="w-full p-2 border rounded-md" rows="3"></textarea>
+    </div>
+
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="this.router.navigate(['/app/planos'])" class="px-4 py-2 text-gray-500">Cancelar</button>
+      <button type="submit" [disabled]="execucaoForm.invalid" class="px-6 py-2 bg-green-600 text-white rounded-lg">Confirmar Execução</button>
+    </div>
+  </form>
+</div>

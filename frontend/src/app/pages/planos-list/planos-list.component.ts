@@ -1,0 +1,143 @@
+// frontend\src\app\pages\planos-list\planos-list.component.ts
+
+import { Component, inject, signal, OnInit, computed } from '@angular/core'; // Adicionado computed
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { PlanoService } from '../../services/plano.service';
+
+@Component({
+  selector: 'app-planos-list',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  template: `
+    <div class="p-6 max-w-6xl mx-auto min-h-screen bg-gray-50/30">
+      
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Planos de Manutenção</h1>
+          <p class="text-gray-500">Gerencie as rotinas preventivas do PIM em tempo real.</p>
+        </div>
+        <button routerLink="/app/planos/novo" 
+                class="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all active:scale-95">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Novo plano
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mb-8">
+        <button (click)="filtroAtual.set('todos')" 
+                [class]="filtroAtual() === 'todos' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 border-gray-200'"
+                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm">
+          Todos ({{ planos().length }})
+        </button>
+        <button (click)="filtroAtual.set('atrasados')" 
+                [class]="filtroAtual() === 'atrasados' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border-red-100'"
+                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm flex items-center gap-2">
+          ⚠️ Só Atrasados
+        </button>
+        <button (click)="filtroAtual.set('criticos')" 
+                [class]="filtroAtual() === 'criticos' ? 'bg-orange-500 text-white' : 'bg-white text-orange-600 border-orange-100'"
+                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm flex items-center gap-2">
+          ⏳ Críticos (7 dias)
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let plano of planosFiltrados()" 
+             class="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-l-8 flex flex-col justify-between hover:shadow-xl transition-all group"
+             [ngClass]="calcularStatus(plano.data_inicial).border">
+          
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg uppercase">
+                {{ plano.equipamento_id }}
+              </span>
+              <span [ngClass]="calcularStatus(plano.data_inicial).cor" 
+                    class="px-3 py-1 rounded-full text-[10px] font-black border flex items-center gap-1">
+                {{ calcularStatus(plano.data_inicial).icon }} {{ calcularStatus(plano.data_inicial).label }}
+              </span>
+            </div>
+
+            <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+              {{ plano.titulo }}
+            </h3>
+            
+            <div class="mb-4 min-h-[50px]">
+              <div *ngIf="plano.ultima_observacao" class="bg-gray-50 border-l-4 border-gray-300 p-2 rounded-r-lg">
+                <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Último Relato:</label>
+                <p class="text-sm text-gray-700 italic line-clamp-2">"{{ plano.ultima_observacao }}"</p>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-6 text-sm">
+              <p class="flex items-center gap-2"><span class="text-gray-400">📅</span> Próxima: <b>{{ plano.data_inicial | date:'dd/MM/yyyy' }}</b></p>
+              <p class="flex items-center gap-2"><span class="text-gray-400">👤</span> Técnico: <b>{{ plano.tecnico_responsavel }}</b></p>
+            </div>
+          </div>
+
+          <button [routerLink]="['/app/execucoes/nova']" 
+                  [queryParams]="{ planoId: plano.id, titulo: plano.titulo, tecnico: plano.tecnico_responsavel }"
+                  class="w-full py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all">
+              Registrar Manutenção
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="planosFiltrados().length === 0" class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+        <h3 class="text-lg font-medium text-gray-400">Nenhum plano encontrado neste filtro.</h3>
+      </div>
+
+    </div>
+  `
+})
+export class PlanosListComponent implements OnInit {
+  private planoService = inject(PlanoService);
+  
+  planos = signal<any[]>([]);
+  filtroAtual = signal<'todos' | 'atrasados' | 'criticos'>('todos');
+
+  // Lógica de Filtro Inteligente
+  planosFiltrados = computed(() => {
+    const todos = this.planos();
+    const filtro = this.filtroAtual();
+
+    if (filtro === 'todos') return todos;
+
+    return todos.filter(plano => {
+      const status = this.calcularStatus(plano.data_inicial).label;
+      if (filtro === 'atrasados') return status === 'ATRASADO';
+      if (filtro === 'criticos') return status === 'CRÍTICO';
+      return true;
+    });
+  });
+
+  ngOnInit(): void {
+    this.carregarPlanos();
+  }
+
+  carregarPlanos(): void {
+    this.planoService.listar().subscribe({
+      next: (res) => this.planos.set(res),
+      error: (err) => console.error('Erro ao listar:', err)
+    });
+  }
+
+  calcularStatus(dataProxima: string) {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dataManutencao = new Date(dataProxima);
+    
+    const diffInMs = dataManutencao.getTime() - hoje.getTime();
+    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays < 0) {
+      return { label: 'ATRASADO', cor: 'text-red-700 bg-red-50 border-red-200', border: 'border-red-500', icon: '⚠️' };
+    } else if (diffInDays <= 7) {
+      return { label: 'CRÍTICO', cor: 'text-orange-700 bg-orange-50 border-orange-200', border: 'border-orange-500', icon: '⏳' };
+    } else {
+      return { label: 'EM DIA', cor: 'text-green-700 bg-green-50 border-green-200', border: 'border-green-500', icon: '✅' };
+    }
+  }
+}

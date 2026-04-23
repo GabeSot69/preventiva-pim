@@ -1,0 +1,52 @@
+<div class="p-6 max-w-6xl mx-auto">
+  <div class="flex justify-between items-center mb-8">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-800">Planos de Manutenção</h1>
+    <p class="text-gray-500">Gerencie as rotinas preventivas do parque industrial.</p>
+  </div>
+  
+  <div class="flex gap-3"> <a routerLink="/app/execucoes/nova" 
+       class="px-5 py-2.5 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-all shadow-sm flex items-center gap-2">
+      <span>⚙️</span> Registrar Execução
+    </a>
+
+    <button routerLink="/app/planos/novo" 
+            class="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-all shadow-sm">
+      + Novo Plano
+    </button>
+  </div>
+</div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-gray-50 border-b border-gray-100">
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Título do Plano</th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Equipamento</th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Periodicidade</th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Próxima Execução</th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Responsável</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        <tr *ngFor="let plano of planos" class="hover:bg-gray-50 transition-colors">
+          <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ plano.titulo }}</td>
+          <td class="px-6 py-4 text-sm text-gray-600">
+            <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium">
+              ID: {{ plano.equipamento_id }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-600">{{ plano.periodicidade_dias }} dias</td>
+          <td class="px-6 py-4 text-sm text-gray-600">{{ plano.data_inicial | date:'dd/MM/yyyy' }}</td>
+          <td class="px-6 py-4 text-sm text-gray-600">{{ plano.tecnico_responsavel }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="planos.length === 0" class="p-12 text-center">
+      <div class="text-gray-400 mb-2">🔍</div>
+      <p class="text-gray-500 font-medium">Nenhum plano encontrado no banco de dados.</p>
+      <p class="text-sm text-gray-400">Os planos cadastrados no formulário aparecerão aqui.</p>
+    </div>
+  </div>
+</div>
