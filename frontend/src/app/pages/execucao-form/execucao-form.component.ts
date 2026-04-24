@@ -177,10 +177,13 @@ export class ExecucaoFormComponent implements OnInit {
 
       const payload = {
         ...this.execForm.value,
+        dataExecucao: new Date(this.execForm.value.dataExecucao).toISOString(),
         planoId: Number(this.execForm.value.planoId),
         tecnicoId: this.authService.getUsuario()?.id,
         checklist
       };
+
+      console.log('Payload enviado para o backend:', payload);
 
       this.execucaoService.criar(payload).subscribe({
         next: () => {

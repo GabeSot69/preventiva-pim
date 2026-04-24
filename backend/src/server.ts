@@ -80,6 +80,7 @@ protectedRouter.use('/status-execucao', statusExecucaoRoutes);
 app.use('/app', protectedRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error("Erro detalhado no Service:", err);
   if (err instanceof AppError) {
     return res.status(err.status).json({ message: err.message });
   }
