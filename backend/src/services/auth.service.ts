@@ -51,7 +51,15 @@ export class AuthService {
       tokenAcesso,
       refreshToken: valorRefresh,
       trocarSenha: usuario.trocar_senha || false,
-      usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email, perfil: perfilChave },
+      usuario: { 
+        id: usuario.id, 
+        nome: usuario.nome, 
+        email: usuario.email, 
+        perfil: {
+          chave: usuario.perfil?.chave,
+          descricao: usuario.perfil?.descricao
+        }
+      },
     };
   }
 

@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,8 +13,8 @@ import { RouterModule, Router } from '@angular/router';
       <aside *ngIf="router.url !== '/login'" class="w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm">
         <div class="p-6">
           <div class="flex items-center gap-3 text-blue-600 mb-10">
-            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg font-bold text-xl">P</div>
-            <span class="font-black tracking-tighter text-xl text-gray-900">MANUT_PIM</span>
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg font-bold text-xl">SMP</div>
+            <span class="font-black tracking-tighter text-xl text-gray-900">Preventiva PIM</span>
           </div>
 
           <nav class="space-y-2">
@@ -65,13 +66,22 @@ import { RouterModule, Router } from '@angular/router';
         </div>
 
         <div class="mt-auto p-6 border-t border-gray-100">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold">S</div>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold">
+              {{ authService.usuario()?.nome?.charAt(0) || 'U' }}
+            </div>
             <div>
-              <p class="text-xs font-black">Simone</p>
-              <p class="text-[10px] text-gray-400">Analista de TI</p>
+              <p class="text-xs font-black">{{ authService.usuario()?.nome || 'Usuário' }}</p>
+              <p class="text-[10px] text-gray-400">{{ authService.usuario()?.perfil?.descricao || 'Perfil' }}</p>
             </div>
           </div>
+
+          <button (click)="logout()" class="group flex items-center gap-2 px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H21" />
+            </svg>
+            <span>Sair do sistema</span>
+          </button>
         </div>
       </aside>
 
@@ -83,4 +93,10 @@ import { RouterModule, Router } from '@angular/router';
 })
 export class AppComponent {
   public router = inject(Router);
+  public authService = inject(AuthService);
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }
