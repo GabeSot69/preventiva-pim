@@ -9,11 +9,11 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-[#f7f9fb] font-['Sans Serif'] selection:bg-blue-100">
-      <div class="flex w-full max-w-5xl h-[640px] bg-white rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(26,54,93,0.1)] border border-slate-100 mx-4">
+    <div class="min-h-screen flex items-center justify-center bg-[#f7f9fb] font-['Sans Serif'] selection:bg-[#02464a]/10">
+      <div class="flex w-full max-w-5xl h-[640px] bg-white rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(2,70,74,0.1)] border border-slate-100 mx-4">
         
         <!-- Lado Esquerdo: Branding/Visual Industrial (Centralizado) -->
-        <div class="hidden lg:flex flex-col justify-between w-1/2 bg-[#1a365d] p-12 text-white relative overflow-hidden">
+        <div class="hidden lg:flex flex-col justify-between w-1/2 bg-[#02464a] p-12 text-white relative overflow-hidden">
           <div class="relative z-10 flex items-center gap-3">
             <div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
@@ -25,7 +25,7 @@ import { AuthService } from '../../services/auth.service';
             <span class="text-lg font-bold tracking-tight">Sistema de Manutenção Preventiva - PIM</span>
           </div>         
           <div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-100">
               <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
               <circle cx="12" cy="12" r="3"/>
               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.83-2.83l-3.94 3.6z"/>
@@ -36,21 +36,21 @@ import { AuthService } from '../../services/auth.service';
             <h1 class="text-4xl font-extrabold leading-tight mb-6">
               Gestão inteligente de manutenções.
             </h1>
-            <p class="text-blue-100 text-lg leading-relaxed opacity-90">
+            <p class="text-emerald-50 text-lg leading-relaxed opacity-90">
               Centralize e padronize seus dados de manutenção com autoridade e precisão.
             </p>
           </div>
 
           <div class="relative z-10 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-md">
             <div class="flex items-center gap-4">
-              <div class="w-10 h-10 bg-blue-400/20 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-200">
+              <div class="w-10 h-10 bg-emerald-400/20 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-200">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
                 </svg>
               </div>
               <div>
                 <p class="text-sm font-semibold">Ambiente Seguro</p>
-                <p class="text-xs text-blue-200/80 tracking-wider">Criptografia de ponta a ponta ativa</p>
+                <p class="text-xs text-emerald-200/80 tracking-wider">Criptografia de ponta a ponta ativa</p>
               </div>
             </div>
           </div>
@@ -68,13 +68,13 @@ import { AuthService } from '../../services/auth.service';
               <div>
                 <label for="email" class="block text-xs font-bold text-slate-700 tracking-widest mb-2">E-mail Corporativo</label>
                 <div class="relative group">
-                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#1a365d] text-slate-400 transition-colors">
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                     </svg>
                   </div>
                   <input id="email" formControlName="email" type="email" required
-                    class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-[#1a365d] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
+                    class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
                     placeholder="nome@empresa.com.br">
                 </div>
               </div>
@@ -82,16 +82,16 @@ import { AuthService } from '../../services/auth.service';
               <div>
                 <div class="flex justify-between items-center mb-2">
                   <label for="password" class="block text-xs font-bold text-slate-700 tracking-widest">Senha</label>
-                  <a href="#" class="text-xs font-bold text-[#1a365d] hover:underline decoration-2 underline-offset-4">Esqueci minha senha</a>
+                  <a href="#" class="text-xs font-bold text-[#02464a] hover:underline decoration-2 underline-offset-4">Esqueci minha senha</a>
                 </div>
                 <div class="relative group">
-                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#1a365d] text-slate-400 transition-colors">
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
                   </div>
                   <input id="password" formControlName="senha" type="password" required
-                    class="block w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-[#1a365d] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
+                    class="block w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
                     placeholder="••••••••">
                   <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -102,7 +102,7 @@ import { AuthService } from '../../services/auth.service';
               </div>
 
               <div class="flex items-center">
-                <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-300 text-[#1a365d] focus:ring-[#1a365d]/20 transition-all cursor-pointer">
+                <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-300 text-[#02464a] focus:ring-[#02464a]/20 transition-all cursor-pointer">
                 <label for="remember" class="ml-2.5 text-sm font-semibold text-slate-600 cursor-pointer select-none">Lembrar acesso</label>
               </div>
 
@@ -111,7 +111,7 @@ import { AuthService } from '../../services/auth.service';
               </div>
 
               <button type="submit" [disabled]="loginForm.invalid || loading"
-                class="w-full group flex items-center justify-center gap-2 py-4 px-6 bg-[#1a365d] hover:bg-[#122642] text-white font-bold rounded-xl shadow-[0_10px_20px_rgba(26,54,93,0.2)] transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]">
+                class="w-full group flex items-center justify-center gap-2 py-4 px-6 bg-[#02464a] hover:bg-[#013538] text-white font-bold rounded-xl shadow-[0_10px_20px_rgba(2,70,74,0.2)] transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]">
                 <span *ngIf="!loading">Entrar no Sistema</span>
                 <span *ngIf="loading">Autenticando...</span>
                 <svg *ngIf="!loading" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
@@ -122,7 +122,7 @@ import { AuthService } from '../../services/auth.service';
 
             <div class="mt-12 pt-8 border-t border-slate-100 text-center">
               <p class="text-sm font-medium text-slate-500">
-                Precisa de ajuda? Entre em contato com o <a href="#" class="text-[#1a365d] font-bold hover:underline">Suporte TI</a>
+                Precisa de ajuda? Entre em contato com o <a href="#" class="text-[#02464a] font-bold hover:underline">Suporte TI</a>
               </p>
             </div>
           </div>

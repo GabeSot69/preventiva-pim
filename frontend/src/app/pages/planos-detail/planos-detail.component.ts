@@ -43,6 +43,26 @@ import { PlanoService } from '../../services/plano.service';
           </div>
         </div>
 
+        <!-- Checklist do Plano -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="p-6 border-b border-gray-50 bg-gray-50/50">
+            <h2 class="font-bold text-gray-800">Itens do Checklist</h2>
+          </div>
+          <div class="p-6">
+            <ul class="space-y-3">
+              <li *ngFor="let item of plano().itens_checklist" class="flex items-center gap-3 text-sm text-gray-600">
+                <div class="w-5 h-5 bg-blue-50 text-blue-600 rounded flex items-center justify-center font-bold text-[10px]">
+                  {{ item.ordem }}
+                </div>
+                {{ item.descricao }}
+              </li>
+              <li *ngIf="!plano().itens_checklist?.length" class="text-gray-400 italic text-sm">
+                Nenhum item configurado para este checklist.
+              </li>
+            </ul>
+          </div>
+        </div>
+
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
           <div class="p-6 border-b border-gray-50 bg-gray-50/50">
             <h2 class="font-bold text-gray-800">Histórico de Execuções</h2>

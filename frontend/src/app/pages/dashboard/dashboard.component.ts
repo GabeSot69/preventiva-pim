@@ -19,7 +19,7 @@ import { DashboardService } from '../../services/dashboard.service';
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-red-100 text-red-600 rounded-2xl">⚠️</div>
+            <div class="p-3 bg-red-50 text-red-600 rounded-2xl">⚠️</div>
             <span class="text-xs font-bold text-gray-400 uppercase">Atrasadas</span>
           </div>
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.atrasadas || 0 }}</p>
@@ -27,7 +27,7 @@ import { DashboardService } from '../../services/dashboard.service';
 
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl">⏳</div>
+            <div class="p-3 bg-orange-50 text-orange-600 rounded-2xl">⏳</div>
             <span class="text-xs font-bold text-gray-400 uppercase">Próximos 7 dias</span>
           </div>
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.previstas7Dias || 0 }}</p>
@@ -35,7 +35,7 @@ import { DashboardService } from '../../services/dashboard.service';
 
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-green-100 text-green-600 rounded-2xl">✅</div>
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">✅</div>
             <span class="text-xs font-bold text-gray-400 uppercase">Conformidade</span>
           </div>
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.conformidadeGeralChecklist || 0 }}%</p>
@@ -43,7 +43,7 @@ import { DashboardService } from '../../services/dashboard.service';
 
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl">📊</div>
+            <div class="p-3 bg-emerald-100 text-[#02464a] rounded-2xl">📊</div>
             <span class="text-xs font-bold text-gray-400 uppercase">Execuções/Mês</span>
           </div>
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.execucoesNoMes || 0 }}</p>

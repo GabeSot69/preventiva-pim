@@ -1,6 +1,4 @@
-// frontend\src\app\pages\planos-list\planos-list.component.ts
-
-import { Component, inject, signal, OnInit, computed } from '@angular/core'; // Adicionado computed
+import { Component, inject, signal, OnInit, computed } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PlanoService } from '../../services/plano.service';
@@ -17,8 +15,10 @@ import { PlanoService } from '../../services/plano.service';
           <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Planos de Manutenção</h1>
           <p class="text-gray-500">Gerencie as rotinas preventivas do PIM em tempo real.</p>
         </div>
+        
         <button routerLink="/app/planos/novo" 
-                class="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all active:scale-95">
+                [style.background-color]="'#02464a'"
+                class="flex items-center justify-center gap-2 px-6 py-3 text-white font-bold rounded-2xl hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-[#02464a]/20">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
@@ -28,8 +28,8 @@ import { PlanoService } from '../../services/plano.service';
 
       <div class="flex flex-wrap gap-3 mb-8">
         <button (click)="filtroAtual.set('todos')" 
-                [class]="filtroAtual() === 'todos' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 border-gray-200'"
-                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm">
+                [class]="filtroAtual() === 'todos' ? 'bg-[#02464a] text-white shadow-md shadow-[#02464a]/20' : 'bg-white text-gray-600 border-gray-200'"
+                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all">
           Todos ({{ planos().length }})
         </button>
         <button (click)="filtroAtual.set('atrasados')" 
@@ -51,7 +51,7 @@ import { PlanoService } from '../../services/plano.service';
           
           <div>
             <div class="flex justify-between items-start mb-4">
-              <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg uppercase">
+              <span class="px-3 py-1 bg-gray-100 text-[#02464a] text-xs font-bold rounded-lg uppercase">
                 ID: {{ plano.equipamento?.id }}
               </span>
               <span [ngClass]="calcularStatus(plano.proxima_em).cor" 
@@ -60,13 +60,13 @@ import { PlanoService } from '../../services/plano.service';
               </span>
             </div>
 
-            <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+            <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-[#02464a] transition-colors">
               {{ plano.titulo }}
             </h3>
             
             <div class="mb-4 min-h-[50px]">
-              <div *ngIf="plano.descricao" class="bg-gray-50 border-l-4 border-gray-300 p-2 rounded-r-lg">
-                <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Descrição:</label>
+              <div *ngIf="plano.descricao" class="bg-gray-50 border-l-4 border-[#02464a]/30 p-2 rounded-r-lg">
+                <label class="text-[10px] uppercase font-bold text-[#02464a]/60 block mb-1">Descrição:</label>
                 <p class="text-sm text-gray-700 italic line-clamp-2">"{{ plano.descricao }}"</p>
               </div>
             </div>
@@ -79,8 +79,9 @@ import { PlanoService } from '../../services/plano.service';
 
           <button [routerLink]="['/app/execucoes/nova']" 
                   [queryParams]="{ planoId: plano.id, titulo: plano.titulo, tecnico: plano.tecnico?.nome }"
-                  class="w-full py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all">
-              Registrar Manutenção
+                  [style.background-color]="'#02464a'"
+                  class="w-full py-3 text-white font-bold rounded-xl hover:brightness-125 transition-all shadow-md shadow-[#02464a]/10 active:scale-95">
+            Registrar Manutenção
           </button>
         </div>
       </div>
@@ -98,7 +99,6 @@ export class PlanosListComponent implements OnInit {
   planos = signal<any[]>([]);
   filtroAtual = signal<'todos' | 'atrasados' | 'criticos'>('todos');
 
-  // Lógica de Filtro Inteligente
   planosFiltrados = computed(() => {
     const todos = this.planos();
     const filtro = this.filtroAtual();

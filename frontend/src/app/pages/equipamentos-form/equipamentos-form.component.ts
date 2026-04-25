@@ -11,7 +11,7 @@ import { EquipamentoService } from '../../services/equipamento.service';
   template: `
     <div class="p-6 max-w-2xl mx-auto min-h-screen bg-gray-50/30">
       <div class="flex items-center gap-4 mb-8">
-        <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+        <div class="p-3 bg-[#02464a]/10 text-[#02464a] rounded-2xl shadow-sm border border-[#02464a]/5">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -20,7 +20,7 @@ import { EquipamentoService } from '../../services/equipamento.service';
           <h1 class="text-2xl font-bold text-gray-900 tracking-tight">
             {{ idEdicao ? 'Editar' : 'Novo' }} Equipamento
           </h1>
-          <p class="text-gray-500">Cadastre ou atualize as informações técnicas do ativo.</p>
+          <p class="text-gray-500 text-sm">Cadastre ou atualize as informações técnicas do ativo.</p>
         </div>
       </div>
 
@@ -33,13 +33,13 @@ import { EquipamentoService } from '../../services/equipamento.service';
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Código/TAG</label>
               <input type="text" formControlName="codigo" placeholder="Ex: MOTO-001" 
-                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700">
+                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#02464a]/20 focus:border-[#02464a] transition-all outline-none text-gray-700">
             </div>
 
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Nome do Ativo</label>
               <input type="text" formControlName="nome" placeholder="Ex: Motor de Indução" 
-                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700">
+                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#02464a]/20 focus:border-[#02464a] transition-all outline-none text-gray-700">
             </div>
           </div>
 
@@ -47,13 +47,13 @@ import { EquipamentoService } from '../../services/equipamento.service';
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo</label>
               <input type="text" formControlName="tipo" placeholder="Ex: Elétrico, Mecânico" 
-                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700">
+                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#02464a]/20 focus:border-[#02464a] transition-all outline-none text-gray-700">
             </div>
 
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Localização</label>
               <input type="text" formControlName="localizacao" placeholder="Ex: Galpão A, Setor 2" 
-                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700">
+                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#02464a]/20 focus:border-[#02464a] transition-all outline-none text-gray-700">
             </div>
           </div>
 
@@ -61,27 +61,27 @@ import { EquipamentoService } from '../../services/equipamento.service';
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Fabricante</label>
               <input type="text" formControlName="fabricante" placeholder="Ex: WEG, Siemens" 
-                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700">
+                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#02464a]/20 focus:border-[#02464a] transition-all outline-none text-gray-700">
             </div>
 
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Modelo</label>
               <input type="text" formControlName="modelo" placeholder="Ex: W22 Premium" 
-                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-gray-700">
+                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#02464a]/20 focus:border-[#02464a] transition-all outline-none text-gray-700">
             </div>
           </div>
 
           <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
             <input type="checkbox" formControlName="ativo" id="ativo" 
-                   class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all">
+                   class="h-5 w-5 rounded border-gray-300 text-[#02464a] focus:ring-[#02464a] transition-all cursor-pointer">
             <label for="ativo" class="text-sm font-medium text-gray-700 cursor-pointer">
               Ativo para manutenções?
             </label>
           </div>
 
-          <div *ngIf="form.invalid && form.touched" class="p-4 bg-orange-50 border border-orange-100 rounded-xl">
-            <p class="text-xs font-bold text-orange-600 uppercase mb-2">Campos pendentes:</p>
-            <ul class="text-xs text-orange-500 list-disc list-inside">
+          <div *ngIf="form.invalid && form.touched" class="p-4 bg-amber-50 border border-amber-100 rounded-xl text-amber-800">
+            <p class="text-xs font-bold uppercase mb-2">Campos pendentes:</p>
+            <ul class="text-xs list-disc list-inside space-y-1">
               <li *ngIf="form.get('codigo')?.invalid">Código/TAG (mínimo 3 caracteres)</li>
               <li *ngIf="form.get('nome')?.invalid">Nome do Ativo é obrigatório</li>
               <li *ngIf="form.get('tipo')?.invalid">Tipo é obrigatório</li>
@@ -94,8 +94,10 @@ import { EquipamentoService } from '../../services/equipamento.service';
                     class="px-6 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-all">
               Cancelar
             </button>
+            
             <button type="submit" [disabled]="form.invalid" 
-                    class="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold rounded-xl hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 shadow-md shadow-blue-100">
+                    [style.background-color]="form.invalid ? '#cbd5e1' : '#02464a'"
+                    class="px-8 py-2.5 text-white font-bold rounded-xl hover:brightness-110 hover:-translate-y-0.5 active:scale-95 transition-all disabled:cursor-not-allowed shadow-lg shadow-[#02464a]/20">
               {{ idEdicao ? 'Salvar Alterações' : 'Cadastrar Equipamento' }}
             </button>
           </div>

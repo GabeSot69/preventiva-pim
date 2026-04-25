@@ -6,12 +6,12 @@
   </div>
   
   <div class="flex gap-3"> <a routerLink="/app/execucoes/nova" 
-       class="px-5 py-2.5 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-all shadow-sm flex items-center gap-2">
+       class="px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-2">
       <span>⚙️</span> Registrar Execução
     </a>
 
     <button routerLink="/app/planos/novo" 
-            class="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-all shadow-sm">
+            class="px-5 py-2.5 bg-[#02464a] text-white font-medium rounded-xl hover:bg-[#013538] transition-all shadow-sm">
       + Novo Plano
     </button>
   </div>
@@ -32,7 +32,7 @@
         <tr *ngFor="let plano of planos" class="hover:bg-gray-50 transition-colors">
           <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ plano.titulo }}</td>
           <td class="px-6 py-4 text-sm text-gray-600">
-            <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium">
+            <span class="px-2 py-1 bg-emerald-50 text-[#02464a] rounded-md text-xs font-medium">
               ID: {{ plano.equipamento_id }}
             </span>
           </td>
