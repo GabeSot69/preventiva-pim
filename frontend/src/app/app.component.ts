@@ -13,7 +13,7 @@ import { AuthService } from './services/auth.service';
       <aside *ngIf="router.url !== '/login'" class="w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm">
         <div class="p-6">
           <div class="flex items-center gap-3 text-[#02464a] mb-10">
-            <div class="w-10 h-10 bg-[#02464a] rounded-xl flex items-center justify-center text-white shadow-lg font-bold text-xl">SMP</div>
+            <img src="assets/img/logo-preventiva.jpeg" alt="Logo" class="w-10 h-10 rounded-xl shadow-lg object-cover">
             <span class="font-black tracking-tighter text-xl text-gray-900">Preventiva PIM</span>
           </div>
 
