@@ -16,10 +16,27 @@ import { DashboardService } from '../../services/dashboard.service';
       </div>
 
       <!-- Métricas Principais -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-red-50 text-red-600 rounded-2xl">⚠️</div>
+            <div class="p-3 bg-green-50 text-green-600 rounded-2xl">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </div>
+            <span class="text-xs font-bold text-gray-400 uppercase">Em Dia</span>
+          </div>
+          <p class="text-3xl font-black text-gray-900">{{ emDia()?.equipamentosEmDia || 0 }}</p>
+          <p class="text-xs text-gray-400 mt-2">{{ emDia()?.percentual || 0 }}% do total</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="p-3 bg-red-50 text-red-600 rounded-2xl">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+            </div>
             <span class="text-xs font-bold text-gray-400 uppercase">Atrasadas</span>
           </div>
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.atrasadas || 0 }}</p>
@@ -27,7 +44,11 @@ import { DashboardService } from '../../services/dashboard.service';
 
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-orange-50 text-orange-600 rounded-2xl">⏳</div>
+            <div class="p-3 bg-orange-50 text-orange-600 rounded-2xl">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </div>
             <span class="text-xs font-bold text-gray-400 uppercase">Próximos 7 dias</span>
           </div>
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.previstas7Dias || 0 }}</p>
@@ -35,7 +56,11 @@ import { DashboardService } from '../../services/dashboard.service';
 
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">✅</div>
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751A11.959 11.959 0 0 1 12 2.251Z" />
+              </svg>
+            </div>
             <span class="text-xs font-bold text-gray-400 uppercase">Conformidade</span>
           </div>
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.conformidadeGeralChecklist || 0 }}%</p>
@@ -43,7 +68,11 @@ import { DashboardService } from '../../services/dashboard.service';
 
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-emerald-100 text-[#02464a] rounded-2xl">📊</div>
+            <div class="p-3 bg-emerald-100 text-[#02464a] rounded-2xl">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+              </svg>
+            </div>
             <span class="text-xs font-bold text-gray-400 uppercase">Execuções/Mês</span>
           </div>
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.execucoesNoMes || 0 }}</p>
@@ -99,10 +128,12 @@ export class DashboardComponent implements OnInit {
   
   metricas = signal<any>(null);
   atrasadas = signal<any[]>([]);
+  emDia = signal<any>(null);
 
   ngOnInit(): void {
     this.service.getMetricas().subscribe(res => this.metricas.set(res));
     this.service.getAtrasadas().subscribe(res => this.atrasadas.set(res));
+    this.service.getEmDia().subscribe(res => this.emDia.set(res));
   }
 
   calcularDiasAtraso(data: string) {

@@ -21,4 +21,10 @@ export class DashboardController {
       return res.status(200).json(await this.service.getDisponibilidade());
     } catch (err) { next(err); }
   };
+
+  getEmDia = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(200).json(await this.service.getEmDia());
+    } catch (err) { next(err); }
+  };
 }

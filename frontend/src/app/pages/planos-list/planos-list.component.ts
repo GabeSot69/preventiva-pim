@@ -35,12 +35,18 @@ import { PlanoService } from '../../services/plano.service';
         <button (click)="filtroAtual.set('atrasados')" 
                 [class]="filtroAtual() === 'atrasados' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border-red-100'"
                 class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm flex items-center gap-2">
-          ⚠️ Só Atrasados
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+          </svg>
+          Só Atrasados
         </button>
         <button (click)="filtroAtual.set('criticos')" 
                 [class]="filtroAtual() === 'criticos' ? 'bg-orange-500 text-white' : 'bg-white text-orange-600 border-orange-100'"
                 class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm flex items-center gap-2">
-          ⏳ Críticos (7 dias)
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          Críticos (7 dias)
         </button>
       </div>
 
@@ -55,8 +61,22 @@ import { PlanoService } from '../../services/plano.service';
                 ID: {{ plano.equipamento?.id }}
               </span>
               <span [ngClass]="calcularStatus(plano.proxima_em).cor" 
-                    class="px-3 py-1 rounded-full text-[10px] font-black border flex items-center gap-1">
-                {{ calcularStatus(plano.proxima_em).icon }} {{ calcularStatus(plano.proxima_em).label }}
+                    class="px-3 py-1 rounded-full text-[10px] font-black border flex items-center gap-1.5 uppercase">
+                
+                <!-- Icon mapping based on label -->
+                <ng-container [ngSwitch]="calcularStatus(plano.proxima_em).label">
+                  <svg *ngSwitchCase="'ATRASADO'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                  </svg>
+                  <svg *ngSwitchCase="'CRÍTICO'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+                  <svg *ngSwitchCase="'EM DIA'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+                </ng-container>
+
+                {{ calcularStatus(plano.proxima_em).label }}
               </span>
             </div>
 

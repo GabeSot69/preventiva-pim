@@ -88,4 +88,37 @@ export class DashboardService {
       percentualDisponibilidade: total > 0 ? Math.round((disponiveis / total) * 100) : 0
     };
   }
+
+  async getEmDia() {
+    const agora = new Date();
+    const seteDiasDepois = new Date();
+    seteDiasDepois.setDate(agora.getDate() + 7);
+
+    // Equipamentos que não têm planos atrasados e não têm planos previstos para os próximos 7 dias
+    const equipamentos = await this.equipamentoRepo.find({
+      where: { ativo: true },
+      relations: ['planos']
+    });
+
+    const planosAtrasados = await this.planoRepo.find({
+      where: { ativo: true, proxima_em: LessThan(agora) },
+      relations: ['equipamento']
+    });
+
+    const planosProximos7Dias = await this.planoRepo.createQueryBuilder('plano')
+      .where('plano.ativo = :ativo', { ativo: true })
+      .andWhere('plano.proxima_em BETWEEN :agora AND :seteDias', { agora, seteDias: seteDiasDepois })
+      .getMany();
+
+    const idsAtrasados = new Set(planosAtrasados.map(p => p.equipamento.id));
+    const idsProximos = new Set(planosProximos7Dias.map(p => p.equipamento?.id).filter(id => id));
+
+    const emDia = equipamentos.filter(eq => !idsAtrasados.has(eq.id) && !idsProximos.has(eq.id));
+
+    return {
+      equipamentosEmDia: emDia.length,
+      total: equipamentos.length,
+      percentual: equipamentos.length > 0 ? Math.round((emDia.length / equipamentos.length) * 100) : 0
+    };
+  }
 }

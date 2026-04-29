@@ -28,4 +28,8 @@ export class DashboardService {
   getDisponibilidade(): Observable<any> {
     return this.http.get<any>(`${this.API}/disponibilidade`, { headers: this.getHeaders() });
   }
+
+  getEmDia(): Observable<any> {
+    return this.http.get<any>(`${this.API}/em-dia`, { headers: this.getHeaders() });
+  }
 }
