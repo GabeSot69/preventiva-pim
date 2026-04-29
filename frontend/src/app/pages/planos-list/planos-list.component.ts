@@ -12,7 +12,7 @@ import { PlanoService } from '../../services/plano.service';
       
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Planos de Manutenção</h1>
+          <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Planos de manutenção</h1>
           <p class="text-gray-500">Gerencie as rotinas preventivas do PIM em tempo real.</p>
         </div>
         
@@ -101,7 +101,7 @@ import { PlanoService } from '../../services/plano.service';
                   [queryParams]="{ planoId: plano.id, titulo: plano.titulo, tecnico: plano.tecnico?.nome }"
                   [style.background-color]="'#02464a'"
                   class="w-full py-3 text-white font-bold rounded-xl hover:brightness-125 transition-all shadow-md shadow-[#02464a]/10 active:scale-95">
-            Registrar Manutenção
+            Registrar manutenção
           </button>
         </div>
       </div>

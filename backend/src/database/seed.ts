@@ -12,12 +12,20 @@ export async function runSeed() {
   const tokenRepo = AppDataSource.getRepository(RefreshToken);
 
   for (const [chave, descricao] of [
-    ['tecnico', 'Técnico de Manutenção'],
-    ['supervisor', 'Supervisor de Manutenção'],
-    ['gestor', 'Gestor de Produção'],
+    ['ti', 'TI'],
+    ['gestor', 'Gestor'],
+    ['supervisor', 'Supervisor'],
+    ['tecnico', 'Técnico'],
   ] as const) {
     if (!await perfilRepo.findOne({ where: { chave } })) {
       await perfilRepo.save(perfilRepo.create({ chave, descricao }));
+    } else {
+      // Atualiza a descrição caso já exista para bater com o solicitado
+      const perfil = await perfilRepo.findOne({ where: { chave } });
+      if (perfil) {
+        perfil.descricao = descricao;
+        await perfilRepo.save(perfil);
+      }
     }
   }
 

@@ -49,8 +49,7 @@ import { AuthService } from '../../services/auth.service';
                 </svg>
               </div>
               <div>
-                <p class="text-sm font-semibold">Ambiente Seguro</p>
-                <p class="text-xs text-emerald-200/80 tracking-wider">Criptografia de ponta a ponta ativa</p>
+                <p class="text-sm font-semibold">Ambiente Seguro</p>               
               </div>
             </div>
           </div>
@@ -61,7 +60,7 @@ import { AuthService } from '../../services/auth.service';
           <div class="max-w-md mx-auto w-full">
             <div class="mb-10">
               <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Bem-vindo</h2>
-              <p class="text-slate-500 font-medium">Acesse sua conta para gerenciar o catálogo.</p>
+              <p class="text-slate-500 font-medium">Acesse sua conta para gerenciar suas manutenções.</p>
             </div>
 
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">

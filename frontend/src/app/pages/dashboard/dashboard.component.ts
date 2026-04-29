@@ -10,9 +10,19 @@ import { DashboardService } from '../../services/dashboard.service';
   template: `
     <div class="p-6 max-w-6xl mx-auto min-h-screen bg-gray-50/30">
       
-      <div class="mb-10">
-        <h1 class="text-4xl font-black text-gray-900 tracking-tight">Dashboard PIM</h1>
-        <p class="text-gray-500 font-medium">Indicadores de Manutenção Preventiva em tempo real.</p>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+        <div>
+          <h1 class="text-4xl font-black text-gray-900 tracking-tight">Dashboard PIM</h1>
+          <p class="text-gray-500 font-medium">Indicadores de Manutenção Preventiva em tempo real.</p>
+        </div>
+        <button (click)="gerarRelatorio()" 
+                [style.background-color]="'#02464a'"
+                class="flex items-center justify-center gap-2 px-6 py-3 text-white font-bold rounded-2xl hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-[#02464a]/20">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+          </svg>
+          Gerar relatório
+        </button>
       </div>
 
       <!-- Métricas Principais -->
@@ -142,5 +152,10 @@ export class DashboardComponent implements OnInit {
     const prevista = new Date(data);
     const diff = hoje.getTime() - prevista.getTime();
     return Math.floor(diff / (1000 * 60 * 60 * 24));
+  }
+
+  gerarRelatorio() {
+    console.log('Gerando relatório...');
+    alert('A funcionalidade de exportação de relatório PDF/Excel está sendo preparada e estará disponível em breve.');
   }
 }

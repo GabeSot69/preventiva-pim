@@ -22,4 +22,22 @@ export class UsuarioService {
       map(res => res.data)
     );
   }
+
+  obterPorId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.API}/${id}`, { headers: this.getHeaders() }).pipe(
+      map(res => res.data)
+    );
+  }
+
+  criar(dados: any): Observable<any> {
+    return this.http.post<any>(this.API, dados, { headers: this.getHeaders() });
+  }
+
+  atualizar(id: number, dados: any): Observable<any> {
+    return this.http.put<any>(`${this.API}/${id}`, dados, { headers: this.getHeaders() });
+  }
+
+  excluir(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.API}/${id}`, { headers: this.getHeaders() });
+  }
 }

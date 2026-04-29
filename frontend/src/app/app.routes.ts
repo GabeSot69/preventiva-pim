@@ -42,5 +42,17 @@ export const routes: Routes = [
     path: 'app/equipamentos/editar/:id', 
     loadComponent: () => import('./pages/equipamentos-form/equipamentos-form.component').then(m => m.EquipamentosFormComponent) 
   },
+  { 
+    path: 'app/usuarios', 
+    loadComponent: () => import('./pages/usuarios-list/usuarios-list.component').then(m => m.UsuariosListComponent) 
+  },
+  { 
+    path: 'app/usuarios/novo', 
+    loadComponent: () => import('./pages/usuarios-form/usuarios-form.component').then(m => m.UsuariosFormComponent) 
+  },
+  { 
+    path: 'app/usuarios/editar/:id', 
+    loadComponent: () => import('./pages/usuarios-form/usuarios-form.component').then(m => m.UsuariosFormComponent) 
+  },
   { path: '**', redirectTo: 'app/dashboard' } 
 ];

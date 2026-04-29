@@ -35,9 +35,16 @@ export class UsuarioService {
     const existing = await this.repo.findOne({ where: { email: dados.email } });
     if (existing) throw new AppError(400, 'Email já cadastrado');
 
-    const perfilChave = dados.perfil || 'tecnico';
-    const perfil = await this.perfilRepo.findOne({ where: { chave: perfilChave } });
-    if (!perfil) throw new AppError(400, `Perfil inválido: ${perfilChave}`);
+    let perfil: Perfil | null = null;
+    
+    if (dados.perfilId) {
+      perfil = await this.perfilRepo.findOne({ where: { id: dados.perfilId } });
+    } else {
+      const perfilChave = dados.perfil || 'tecnico';
+      perfil = await this.perfilRepo.findOne({ where: { chave: perfilChave } });
+    }
+
+    if (!perfil) throw new AppError(400, `Perfil inválido`);
 
     const usuario = this.repo.create({
       nome: dados.nome,
@@ -56,6 +63,7 @@ export class UsuarioService {
     const skip = PaginationUtils.getSkip(page, limit);
     const [usuarios, total] = await this.repo.findAndCount({ 
       relations: ['perfil'],
+      order: { id: 'DESC' },
       take: limit,
       skip: skip
     });
@@ -80,11 +88,17 @@ export class UsuarioService {
       u.email = dados.email;
     }
     if (dados.senha) u.senha_hash = await bcrypt.hash(dados.senha, 10);
-    if (dados.perfil) {
+    
+    if (dados.perfilId) {
+      const p = await this.perfilRepo.findOne({ where: { id: dados.perfilId } });
+      if (!p) throw new AppError(400, `Perfil inválido`);
+      u.perfil = p;
+    } else if (dados.perfil) {
       const p = await this.perfilRepo.findOne({ where: { chave: dados.perfil } });
       if (!p) throw new AppError(400, `Perfil inválido: ${dados.perfil}`);
       u.perfil = p;
     }
+
     if (dados.setor !== undefined) u.setor = dados.setor;
     if (dados.ativo !== undefined) u.ativo = dados.ativo;
 
