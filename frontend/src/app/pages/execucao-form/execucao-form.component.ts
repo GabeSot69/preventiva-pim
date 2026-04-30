@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -150,7 +150,7 @@ export class ExecucaoFormComponent implements OnInit {
   }
 
   carregarPlanosAtivos(): void {
-    this.planoService.listar().subscribe(res => this.planos.set(res));
+    this.planoService.listar({ limit: 100 }).subscribe(res => this.planos.set(res.data ?? []));
   }
 
   buscarDetalhesDoPlano(planoId: number): void {
