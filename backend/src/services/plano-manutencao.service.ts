@@ -1,4 +1,4 @@
-import { Repository, Between, LessThan, MoreThanOrEqual, FindOptionsWhere } from 'typeorm';
+﻿import { Repository, Between, LessThan, MoreThanOrEqual, FindOptionsWhere } from 'typeorm';
 import { PlanoManutencao } from '../entities/PlanoManutencao';
 import { CriarPlanoManutencaoDTO, AtualizarPlanoManutencaoDTO } from '../dtos';
 import { AppError } from '../errors';
@@ -74,7 +74,7 @@ export class PlanoManutencaoService {
   async obterPorId(id: number) {
     const plano = await this.planoRepo.findOne({
       where: { id },
-      relations: ['itens_checklist', 'equipamento', 'tecnico', 'execucoes', 'execucoes.status', 'execucoes.tecnico']
+      relations: ['itens_checklist', 'equipamento', 'tecnico', 'execucoes', 'execucoes.status', 'execucoes.tecnico', 'execucoes.checklist_execucao', 'execucoes.checklist_execucao.item']
     });
     if (!plano) throw new AppError(404, 'Plano de manutenção não encontrado');
 

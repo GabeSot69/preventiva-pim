@@ -12,15 +12,11 @@ export class UsuarioService {
   private readonly API = 'http://localhost:3000/app/usuarios';
 
   private getHeaders() {
-    return new HttpHeaders({
-      'Authorization': `Bearer ${this.authService.getToken()}`
-    });
+    return new HttpHeaders({ 'Authorization': `Bearer ${this.authService.getToken()}` });
   }
 
-  listar(): Observable<any[]> {
-    return this.http.get<any>(this.API, { headers: this.getHeaders() }).pipe(
-      map(res => res.data)
-    );
+  listar(page: number = 1, limit: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.API}?page=${page}&limit=${limit}`, { headers: this.getHeaders() });
   }
 
   obterPorId(id: number): Observable<any> {

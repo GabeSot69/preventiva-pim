@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -163,11 +163,11 @@ export class PlanosFormComponent implements OnInit {
   }
 
   carregarEquipamentos() {
-    this.equipamentoService.listar().subscribe(res => this.equipamentos.set(res));
+    this.equipamentoService.listar(1, 100).subscribe(res => this.equipamentos.set(res.data ?? []));
   }
 
   carregarUsuarios() {
-    this.usuarioService.listar().subscribe(res => this.usuarios.set(res));
+    this.usuarioService.listar(1, 100).subscribe(res => this.usuarios.set(res.data ?? []));
   }
 
   salvar() {

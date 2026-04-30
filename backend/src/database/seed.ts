@@ -15,7 +15,7 @@ export async function runSeed() {
   const eqRepo = AppDataSource.getRepository(Equipamento);
   const planoRepo = AppDataSource.getRepository(PlanoManutencao);
 
-  // Perfis conforme PRD
+  // Perfis
   for (const [chave, descricao] of [
     ['admin', 'Administrador'],
     ['tecnico', 'Técnico de Manutenção'],
@@ -47,32 +47,17 @@ export async function runSeed() {
   if (!adminUser) {
     const hash = await bcrypt.hash('admin123', 10);
     const perfil = await perfilRepo.findOne({ where: { chave: 'admin' } });
-    adminUser = await userRepo.save(userRepo.create({ 
-      nome: 'Administrador', 
-      email: 'admin@system.com', 
-      senha_hash: hash, 
-      perfil: perfil!, 
-      ativo: true 
+    adminUser = await userRepo.save(userRepo.create({
+      nome: 'Administrador',
+      email: 'admin@system.com',
+      senha_hash: hash,
+      perfil: perfil!,
+      ativo: true,
     }));
     console.log('Usuário admin criado: admin@system.com');
   }
 
-  // Usuário Gestor/Antigo Admin
-  let admin = await userRepo.findOne({ where: { email: 'admin@example.com' } });
-  if (!admin) {
-    const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123456', 10);
-    const perfil = await perfilRepo.findOne({ where: { chave: 'gestor' } });
-    admin = await userRepo.save(userRepo.create({ 
-      nome: 'Admin', 
-      email: 'admin@example.com', 
-      senha_hash: hash, 
-      perfil: perfil!, 
-      ativo: true 
-    }));
-    console.log('Usuário padrão criado: admin@example.com');
-  }
-
-  // Equipamentos (Mínimo 3 conforme PRD)
+  // Equipamentos
   const equipamentos = [
     { codigo: 'PRN-001', nome: 'Prensa Hidráulica 50T', tipo: 'Prensa', localizacao: 'Setor A', fabricante: 'Schuler', modelo: 'PH-50' },
     { codigo: 'CNC-042', nome: 'Torno CNC Mazak', tipo: 'Torno', localizacao: 'Setor B', fabricante: 'Mazak', modelo: 'QT-200' },
@@ -85,11 +70,11 @@ export async function runSeed() {
     }
   }
 
-  // Planos de Manutenção (Mínimo 5 conforme PRD)
+  // Planos de Manutenção
   const eqs = await eqRepo.find();
   if (eqs.length >= 3) {
     const hoje = new Date();
-    
+
     const planos = [
       { titulo: 'Lubrificação Semanal', periodicidade_dias: 7, proxima_em: new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000), equipamento: eqs[0], ativo: true },
       { titulo: 'Inspeção Elétrica Mensal', periodicidade_dias: 30, proxima_em: new Date(hoje.getTime() + 3 * 24 * 60 * 60 * 1000), equipamento: eqs[0], ativo: true },

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UsuarioService } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
+import { PaginatorComponent } from '../../components/paginator/paginator.component';
 
 @Component({
   selector: 'app-usuarios-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PaginatorComponent],
   template: `
     <div class="p-6 max-w-6xl mx-auto min-h-screen bg-gray-50/30">
       
@@ -16,8 +17,7 @@ import { AuthService } from '../../services/auth.service';
           <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Usuários</h1>
           <p class="text-gray-500">Gerencie os usuários e permissões de acesso ao sistema.</p>
         </div>
-        <button *ngIf="podeEditar()"
-                routerLink="/app/usuarios/novo" 
+        <button *ngIf="podeEditar()" routerLink="/app/usuarios/novo" 
                 [style.background-color]="'#02464a'"
                 class="flex items-center justify-center gap-2 px-6 py-3 text-white font-bold rounded-2xl hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-[#02464a]/20">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -47,7 +47,7 @@ import { AuthService } from '../../services/auth.service';
               <td class="px-6 py-4 text-right">
                 <div class="flex justify-end gap-2" *ngIf="podeEditar()">
                   <a [routerLink]="['/app/usuarios/editar', user.id]"
-                          class="p-2 text-gray-400 hover:text-[#02464a] hover:bg-[#02464a]/5 rounded-lg transition-all cursor-pointer">
+                     class="p-2 text-gray-400 hover:text-[#02464a] hover:bg-[#02464a]/5 rounded-lg transition-all cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                     </svg>
@@ -69,6 +69,9 @@ import { AuthService } from '../../services/auth.service';
             </tr>
           </tbody>
         </table>
+        <div class="px-4 border-t border-gray-50">
+          <app-paginator [page]="page()" [totalPages]="totalPages()" [total]="total()" (pageChange)="onPageChange($event)" />
+        </div>
       </div>
     </div>
   `
@@ -76,21 +79,29 @@ import { AuthService } from '../../services/auth.service';
 export class UsuariosListComponent implements OnInit {
   private service = inject(UsuarioService);
   private authService = inject(AuthService);
-  usuarios = signal<any[]>([]);
 
-  ngOnInit(): void {
-    this.carregar();
-  }
+  usuarios = signal<any[]>([]);
+  page = signal(1);
+  totalPages = signal(1);
+  total = signal(0);
+
+  ngOnInit() { this.carregar(); }
 
   podeEditar() {
-    const chave = this.authService.usuario()?.perfil?.chave;
-    return chave === 'admin';
+    return this.authService.usuario()?.perfil?.chave === 'admin';
   }
 
   carregar() {
-    this.service.listar().subscribe(res => {
-      this.usuarios.set(res || []);
+    this.service.listar(this.page()).subscribe(res => {
+      this.usuarios.set(res.data ?? []);
+      this.totalPages.set(res.meta?.totalPages ?? 1);
+      this.total.set(res.meta?.total ?? 0);
     });
+  }
+
+  onPageChange(p: number) {
+    this.page.set(p);
+    this.carregar();
   }
 
   excluir(id: number) {

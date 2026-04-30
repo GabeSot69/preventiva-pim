@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -12,16 +12,11 @@ export class EquipamentoService {
   private readonly API = 'http://localhost:3000/app/equipamentos';
 
   private getHeaders() {
-    return new HttpHeaders({
-      'Authorization': `Bearer ${this.authService.getToken()}`
-    });
+    return new HttpHeaders({ 'Authorization': `Bearer ${this.authService.getToken()}` });
   }
 
-  listar(page: number = 1, limit: number = 10): Observable<any[]> {
-    // Garantindo que o '?' esteja presente na URL
-    return this.http.get<any>(`${this.API}?page=${page}&limit=${limit}`, { headers: this.getHeaders() }).pipe(
-      map(res => res.data)
-    );
+  listar(page: number = 1, limit: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.API}?page=${page}&limit=${limit}`, { headers: this.getHeaders() });
   }
 
   obterPorId(id: number): Observable<any> {

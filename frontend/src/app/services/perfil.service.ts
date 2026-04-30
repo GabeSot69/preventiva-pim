@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -18,8 +18,6 @@ export class PerfilService {
   }
 
   listar(): Observable<any[]> {
-    return this.http.get<any>(this.API, { headers: this.getHeaders() }).pipe(
-      map(res => res.data)
-    );
+    return this.http.get<any[]>(this.API, { headers: this.getHeaders() });
   }
 }

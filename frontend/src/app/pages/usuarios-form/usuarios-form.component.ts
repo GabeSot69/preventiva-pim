@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -116,31 +116,8 @@ export class UsuariosFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.perfilService.listar().subscribe({
-      next: (res) => {
-        console.log('Perfis carregados:', res);
-        if (res && res.length > 0) {
-          this.perfis.set(res);
-        } else {
-          // Fallback caso a API retorne vazio mas os perfis existam no sistema
-          console.warn('API retornou lista vazia de perfis. Usando fallback.');
-          this.perfis.set([
-            { id: 1, descricao: 'TI' },
-            { id: 2, descricao: 'Gestor' },
-            { id: 3, descricao: 'Supervisor' },
-            { id: 4, descricao: 'Técnico' }
-          ]);
-        }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar perfis:', err);
-        // Fallback para não travar a tela
-        this.perfis.set([
-          { id: 1, descricao: 'TI' },
-          { id: 2, descricao: 'Gestor' },
-          { id: 3, descricao: 'Supervisor' },
-          { id: 4, descricao: 'Técnico' }
-        ]);
-      }
+      next: (res) => this.perfis.set(res ?? []),
+      error: (err) => console.error('Erro ao carregar perfis:', err)
     });
 
     const id = this.route.snapshot.params['id'];
