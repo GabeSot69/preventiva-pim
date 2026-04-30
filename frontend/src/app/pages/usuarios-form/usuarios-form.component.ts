@@ -32,7 +32,7 @@ import { PerfilService } from '../../services/perfil.service';
         <div class="grid grid-cols-1 gap-6">
           
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Nome Completo</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Nome completo</label>
             <input type="text" formControlName="nome" placeholder="Ex: João Silva" 
                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#02464a]/20 focus:border-[#02464a] transition-all outline-none text-gray-700">
           </div>
@@ -51,7 +51,7 @@ import { PerfilService } from '../../services/perfil.service';
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Perfil de Acesso</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Perfil de acesso</label>
               <select formControlName="perfilId" 
                       class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#02464a]/20 focus:border-[#02464a] transition-all outline-none text-gray-700 appearance-none">
                 <option value="" disabled>Selecione um perfil</option>

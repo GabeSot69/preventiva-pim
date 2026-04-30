@@ -63,7 +63,8 @@ import { AuthService } from './services/auth.service';
                 </div>
             </a>
 
-            <a routerLink="/app/usuarios" 
+            <a *ngIf="['gestor', 'ti'].includes(authService.usuario()?.perfil?.chave)"
+                routerLink="/app/usuarios" 
                 routerLinkActive="bg-[#02464a] text-white shadow-md shadow-emerald-100" 
                 class="group flex items-center justify-between px-4 py-3 text-sm font-bold text-gray-500 hover:bg-[#02464a] hover:text-white rounded-xl transition-all">
                 <div class="flex items-center gap-3">

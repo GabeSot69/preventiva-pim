@@ -40,7 +40,7 @@ import { AuthService } from '../../services/auth.service';
               Centralize e padronize seus dados de manutenção com autoridade e precisão.
             </p>
           </div>
-
+          
           <div class="relative z-10 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-md">
             <div class="flex items-center gap-4">
               <div class="w-10 h-10 bg-emerald-400/20 rounded-full flex items-center justify-center">

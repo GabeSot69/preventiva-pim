@@ -17,9 +17,9 @@ const service = new DashboardService(
 );
 const controller = new DashboardController(service);
 
-router.get('/metricas', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getMetrics);
-router.get('/atrasadas', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getAtrasadas);
-router.get('/disponibilidade', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getDisponibilidade);
-router.get('/em-dia', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getEmDia);
+router.get('/metricas', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), controller.getMetrics);
+router.get('/atrasadas', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), controller.getAtrasadas);
+router.get('/disponibilidade', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), controller.getDisponibilidade);
+router.get('/em-dia', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), controller.getEmDia);
 
 export default router;

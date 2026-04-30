@@ -22,10 +22,10 @@ const service = new ExecucaoManutencaoService(
 );
 const controller = new ExecucaoManutencaoController(service);
 
-router.post('/', autorizar(PerfilChave.TECNICO, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), validateBody(CriarExecucaoManutencaoSchema), controller.criar);
+router.post('/', autorizar(PerfilChave.TECNICO, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), validateBody(CriarExecucaoManutencaoSchema), controller.criar);
 router.get('/', controller.listar);
 router.get('/:id', controller.obterPorId);
-router.put('/:id', autorizar(PerfilChave.TECNICO, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), validateBody(AtualizarExecucaoManutencaoSchema), controller.atualizar);
-router.delete('/:id', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.excluir);
+router.put('/:id', autorizar(PerfilChave.TECNICO, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), validateBody(AtualizarExecucaoManutencaoSchema), controller.atualizar);
+router.delete('/:id', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), controller.excluir);
 
 export default router;

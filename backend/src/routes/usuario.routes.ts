@@ -16,10 +16,10 @@ const service = new UsuarioService(
 );
 const controller = new UsuarioController(service);
 
-router.post('/', autorizar(PerfilChave.GESTOR), validateBody(CriarUsuarioSchema), controller.criar);
-router.get('/', autorizar(PerfilChave.GESTOR, PerfilChave.SUPERVISOR), controller.listar);
-router.get('/:id', autorizar(PerfilChave.GESTOR, PerfilChave.SUPERVISOR), controller.obterPorId);
-router.put('/:id', autorizar(PerfilChave.GESTOR), validateBody(AtualizarUsuarioSchema), controller.atualizar);
-router.delete('/:id', autorizar(PerfilChave.GESTOR), controller.excluir);
+router.post('/', autorizar(PerfilChave.GESTOR, PerfilChave.TI), validateBody(CriarUsuarioSchema), controller.criar);
+router.get('/', autorizar(PerfilChave.GESTOR, PerfilChave.TI, PerfilChave.SUPERVISOR), controller.listar);
+router.get('/:id', autorizar(PerfilChave.GESTOR, PerfilChave.TI, PerfilChave.SUPERVISOR), controller.obterPorId);
+router.put('/:id', autorizar(PerfilChave.GESTOR, PerfilChave.TI), validateBody(AtualizarUsuarioSchema), controller.atualizar);
+router.delete('/:id', autorizar(PerfilChave.GESTOR, PerfilChave.TI), controller.excluir);
 
 export default router;
