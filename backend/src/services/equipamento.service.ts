@@ -24,7 +24,10 @@ export class EquipamentoService {
   }
 
   async obterPorId(id: number) {
-    const equipamento = await this.equipamentoRepo.findOne({ where: { id } });
+    const equipamento = await this.equipamentoRepo.findOne({ 
+      where: { id },
+      relations: ['planos']
+    });
     if (!equipamento) throw new AppError(404, 'Equipamento não encontrado');
     return equipamento;
   }

@@ -14,9 +14,13 @@ export class ExecucaoManutencaoController {
   listar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { page, limit } = req.query;
+      const { id: usuarioId, perfil } = req.usuario!;
+      const tecnicoId = (perfil?.chave === 'tecnico') ? usuarioId : undefined;
+
       return res.status(200).json(await this.service.listar(
         page ? Number(page) : undefined,
-        limit ? Number(limit) : undefined
+        limit ? Number(limit) : undefined,
+        tecnicoId
       ));
     } catch (err) { next(err); }
   };

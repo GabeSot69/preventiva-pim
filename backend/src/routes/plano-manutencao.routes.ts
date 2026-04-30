@@ -14,10 +14,10 @@ const service = new PlanoManutencaoService(
 );
 const controller = new PlanoManutencaoController(service);
 
-router.post('/', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), validateBody(CriarPlanoManutencaoSchema), controller.criar);
+router.post('/', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), validateBody(CriarPlanoManutencaoSchema), controller.criar);
 router.get('/', controller.listar);
 router.get('/:id', controller.obterPorId);
-router.put('/:id', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), validateBody(AtualizarPlanoManutencaoSchema), controller.atualizar);
-router.delete('/:id', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), controller.excluir);
+router.put('/:id', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), validateBody(AtualizarPlanoManutencaoSchema), controller.atualizar);
+router.delete('/:id', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.excluir);
 
 export default router;

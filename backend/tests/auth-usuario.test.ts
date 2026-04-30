@@ -16,19 +16,21 @@ jest.setTimeout(60000);
 
 let gestorToken: string;
 let tecnicoToken: string;
+let adminToken: string;
 let gEmail: string;
 let tEmail: string;
 
 beforeAll(async () => {
   await initializeDatabase();
+  await AppDataSource.synchronize();
   const entities = AppDataSource.entityMetadatas;
   for (const entity of entities) {
     await AppDataSource.query(`TRUNCATE "${entity.tableName}" CASCADE;`);
   }
-  await AppDataSource.synchronize();
   const seedData = await seedBase();
   gestorToken = seedData.gestorToken;
   tecnicoToken = seedData.tecnicoToken;
+  adminToken = seedData.adminToken;
   gEmail = seedData.gEmail;
   tEmail = seedData.tEmail;
 });
@@ -89,7 +91,7 @@ describe('Troca de senha', () => {
   test('Login de usuário criado pelo gestor retorna trocarSenha: true', async () => {
     await request(app)
       .post('/app/usuarios')
-      .set('Authorization', `Bearer ${gestorToken}`)
+      .set('Authorization', `Bearer ${adminToken}`)
       .send({ nome: 'Novo Tec', email: 'novo_tec@test.com', senha: 'senha_temp', perfil: 'tecnico' });
 
     const loginRes = await request(app)

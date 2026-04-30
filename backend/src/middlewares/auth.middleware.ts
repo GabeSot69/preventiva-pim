@@ -45,8 +45,8 @@ export const autorizar = (...perfisPermitidos: PerfilChave[]): RequestHandler =>
   };
 };
 
-export const ehTecnico: RequestHandler[] = [autenticar, autorizar(PerfilChave.TECNICO, PerfilChave.GESTOR, PerfilChave.TI)];
-export const ehSupervisor: RequestHandler[] = [autenticar, autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI)];
-export const ehGestor: RequestHandler[] = [autenticar, autorizar(PerfilChave.GESTOR, PerfilChave.TI)];
-export const ehTI: RequestHandler[] = [autenticar, autorizar(PerfilChave.TI)];
-export const ehAdmin: RequestHandler[] = [autenticar, autorizar(PerfilChave.GESTOR, PerfilChave.TI)];
+export const ehTecnico: RequestHandler[] = [autenticar, autorizar(PerfilChave.ADMIN, PerfilChave.TECNICO, PerfilChave.GESTOR)];
+export const ehSupervisor: RequestHandler[] = [autenticar, autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR)];
+export const ehGestor: RequestHandler[] = [autenticar, autorizar(PerfilChave.ADMIN, PerfilChave.GESTOR)];
+export const ehTI: RequestHandler[] = [autenticar, autorizar(PerfilChave.ADMIN)];
+export const ehAdmin: RequestHandler[] = [autenticar, autorizar(PerfilChave.ADMIN)];

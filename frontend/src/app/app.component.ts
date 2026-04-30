@@ -18,7 +18,8 @@ import { AuthService } from './services/auth.service';
           </div>
 
           <nav class="space-y-2">
-            <a routerLink="/app/dashboard" 
+            <a *ngIf="['admin', 'gestor', 'supervisor'].includes(authService.usuario()?.perfil?.chave)"
+                routerLink="/app/dashboard" 
                 routerLinkActive="bg-[#02464a] text-white shadow-md shadow-emerald-100" 
                 class="group flex items-center justify-between px-4 py-3 text-sm font-bold text-gray-500 hover:bg-[#02464a] hover:text-white rounded-xl transition-all">
                 <div class="flex items-center gap-3">
@@ -63,7 +64,7 @@ import { AuthService } from './services/auth.service';
                 </div>
             </a>
 
-            <a *ngIf="['gestor', 'ti'].includes(authService.usuario()?.perfil?.chave)"
+            <a *ngIf="['admin', 'gestor'].includes(authService.usuario()?.perfil?.chave)"
                 routerLink="/app/usuarios" 
                 routerLinkActive="bg-[#02464a] text-white shadow-md shadow-emerald-100" 
                 class="group flex items-center justify-between px-4 py-3 text-sm font-bold text-gray-500 hover:bg-[#02464a] hover:text-white rounded-xl transition-all">

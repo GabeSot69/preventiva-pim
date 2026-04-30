@@ -2,7 +2,6 @@ import { Repository, LessThan } from 'typeorm';
 import { PlanoManutencao } from '../entities/PlanoManutencao';
 import { ExecucaoManutencao } from '../entities/ExecucaoManutencao';
 import { Equipamento } from '../entities/Equipamento';
-import { ItemChecklistExecucao } from '../entities/ItemChecklistExecucao';
 
 export class DashboardService {
   constructor(
@@ -13,7 +12,8 @@ export class DashboardService {
 
   async getMetrics() {
     const agora = new Date();
-    const seteDiasDepois = new Date();
+    agora.setHours(0, 0, 0, 0);
+    const seteDiasDepois = new Date(agora);
     seteDiasDepois.setDate(agora.getDate() + 7);
 
     const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
@@ -30,39 +30,45 @@ export class DashboardService {
         .getCount()
     ]);
 
-    // Cálculo de conformidade via SQL
-    const conformidadeRaw = await this.execucaoRepo.manager
-      .createQueryBuilder(ItemChecklistExecucao, 'item')
-      .innerJoin('item.execucao', 'exec')
-      .select('COUNT(item.id)', 'total')
-      .addSelect('SUM(CASE WHEN item.conforme = true THEN 1 ELSE 0 END)', 'conformes')
+    // Lógica de Conformidade US05: (Realizadas no Prazo / Total Execuções) * 100
+    // Consideramos "no prazo" se data_execucao <= proxima_em (armazenado na execução se houver o campo, 
+    // ou comparando com a conformidade booleana do registro)
+    const execucoesMes = await this.execucaoRepo.createQueryBuilder('exec')
       .where('exec.data_execucao BETWEEN :inicio AND :fim', { inicio: inicioMes, fim: fimMes })
-      .getRawOne();
+      .getMany();
 
-    const totalItens = parseInt(conformidadeRaw?.total || '0');
-    const totalConformes = parseInt(conformidadeRaw?.conformes || '0');
+    const realizadasNoPrazo = execucoesMes.filter(e => e.conformidade === true).length;
+    const conformidadeMensal = execucoesMes.length > 0 
+      ? Math.round((realizadasNoPrazo / execucoesMes.length) * 100) 
+      : 100;
 
     return {
       atrasadas: atrasadasCount,
       previstas7Dias: previstas7DiasCount,
       execucoesNoMes: execucoesMesCount,
-      conformidadeGeralChecklist: totalItens > 0 ? Math.round((totalConformes / totalItens) * 100) : 100
+      conformidadeMensal: conformidadeMensal
     };
   }
 
   async getAtrasadas() {
     const agora = new Date();
+    agora.setHours(0, 0, 0, 0);
     const atrasadas = await this.planoRepo.find({
       where: { ativo: true, proxima_em: LessThan(agora) },
       relations: ['equipamento']
     });
 
+    const hojeParaCalculo = new Date();
     return atrasadas.map(plano => {
-      const diffMs = agora.getTime() - plano.proxima_em!.getTime();
+      const diffMs = hojeParaCalculo.getTime() - plano.proxima_em!.getTime();
       return {
         id: plano.id,
-        plano: plano.titulo,
-        equipamento: plano.equipamento.nome,
+        titulo: plano.titulo, // Nome alterado de 'plano' para 'titulo' para bater com o frontend
+        equipamento: {
+          id: plano.equipamento.id,
+          nome: plano.equipamento.nome,
+          codigo: plano.equipamento.codigo
+        },
         proxima_em: plano.proxima_em,
         dias_atraso: Math.ceil(diffMs / (1000 * 60 * 60 * 24))
       };
@@ -73,52 +79,22 @@ export class DashboardService {
     const total = await this.equipamentoRepo.count();
     const ativos = await this.equipamentoRepo.count({ where: { ativo: true } });
 
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
     const planosAtrasados = await this.planoRepo.find({
-      where: { ativo: true, proxima_em: LessThan(new Date()) },
+      where: { ativo: true, proxima_em: LessThan(hoje) },
       relations: ['equipamento']
     });
 
-    const idsAtrasados = new Set(planosAtrasados.map(p => p.equipamento.id));
-    const disponiveis = total - idsAtrasados.size;
+    const idsEquipamentosComAtraso = new Set(planosAtrasados.map(p => p.equipamento.id));
+    const disponiveis = total - idsEquipamentosComAtraso.size;
 
     return {
       totalEquipamentos: total,
       equipamentosAtivos: ativos,
+      equipamentosComAtraso: idsEquipamentosComAtraso.size,
       equipamentosDisponiveis: disponiveis,
       percentualDisponibilidade: total > 0 ? Math.round((disponiveis / total) * 100) : 0
-    };
-  }
-
-  async getEmDia() {
-    const agora = new Date();
-    const seteDiasDepois = new Date();
-    seteDiasDepois.setDate(agora.getDate() + 7);
-
-    // Equipamentos que não têm planos atrasados e não têm planos previstos para os próximos 7 dias
-    const equipamentos = await this.equipamentoRepo.find({
-      where: { ativo: true },
-      relations: ['planos']
-    });
-
-    const planosAtrasados = await this.planoRepo.find({
-      where: { ativo: true, proxima_em: LessThan(agora) },
-      relations: ['equipamento']
-    });
-
-    const planosProximos7Dias = await this.planoRepo.createQueryBuilder('plano')
-      .where('plano.ativo = :ativo', { ativo: true })
-      .andWhere('plano.proxima_em BETWEEN :agora AND :seteDias', { agora, seteDias: seteDiasDepois })
-      .getMany();
-
-    const idsAtrasados = new Set(planosAtrasados.map(p => p.equipamento.id));
-    const idsProximos = new Set(planosProximos7Dias.map(p => p.equipamento?.id).filter(id => id));
-
-    const emDia = equipamentos.filter(eq => !idsAtrasados.has(eq.id) && !idsProximos.has(eq.id));
-
-    return {
-      equipamentosEmDia: emDia.length,
-      total: equipamentos.length,
-      percentual: equipamentos.length > 0 ? Math.round((emDia.length / equipamentos.length) * 100) : 0
     };
   }
 }

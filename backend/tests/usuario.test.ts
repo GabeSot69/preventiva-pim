@@ -18,14 +18,14 @@ let token: string;
 
 beforeAll(async () => {
   await initializeDatabase();
+  await AppDataSource.synchronize();
   // Limpeza agressiva para Postgres
   const entities = AppDataSource.entityMetadatas;
   for (const entity of entities) {
     const repository = AppDataSource.getRepository(entity.name);
     await repository.query(`TRUNCATE "${entity.tableName}" CASCADE;`);
   }
-  await AppDataSource.synchronize();
-  ({ gestorToken: token } = await seedBase());
+  ({ adminToken: token } = await seedBase());
 });
 
 afterAll(async () => {

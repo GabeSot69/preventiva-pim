@@ -12,10 +12,10 @@ const router = Router();
 const service = new EquipamentoService(AppDataSource.getRepository(Equipamento));
 const controller = new EquipamentoController(service);
 
-router.post('/', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), validateBody(CriarEquipamentoSchema), controller.criar);
+router.post('/', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), validateBody(CriarEquipamentoSchema), controller.criar);
 router.get('/', controller.listar);
 router.get('/:id', controller.obterPorId);
-router.put('/:id', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), validateBody(AtualizarEquipamentoSchema), controller.atualizar);
-router.delete('/:id', autorizar(PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TI), controller.excluir);
+router.put('/:id', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), validateBody(AtualizarEquipamentoSchema), controller.atualizar);
+router.delete('/:id', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.excluir);
 
 export default router;

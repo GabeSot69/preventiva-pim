@@ -1,6 +1,6 @@
 export enum PerfilChave {
+  ADMIN = 'admin',
   GESTOR = 'gestor',
   SUPERVISOR = 'supervisor',
-  TECNICO = 'tecnico',
-  TI = 'ti'
+  TECNICO = 'tecnico'
 }

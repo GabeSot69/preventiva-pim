@@ -14,8 +14,12 @@ export class PlanoManutencaoController {
   listar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { page, limit, ...filtros } = req.query;
+      const { id: usuarioId, perfil } = req.usuario!;
+      const tecnicoId = (perfil?.chave === 'tecnico') ? usuarioId : undefined;
+
       return res.status(200).json(await this.service.listar({
         ...filtros,
+        tecnicoId: tecnicoId ? Number(tecnicoId) : (filtros.tecnicoId ? Number(filtros.tecnicoId) : undefined),
         page: page ? Number(page) : undefined,
         limit: limit ? Number(limit) : undefined
       }));

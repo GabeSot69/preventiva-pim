@@ -14,6 +14,9 @@ export async function seedBase() {
   const hash = await bcrypt.hash('senha_test', 10);
 
   // Usa upsert ou verifica existência para evitar erros de duplicidade se a limpeza falhar
+  let admin = await perfilRepo.findOne({ where: { chave: 'admin' } });
+  if (!admin) admin = await perfilRepo.save(perfilRepo.create({ chave: 'admin', descricao: 'Administrador' }));
+
   let gestor = await perfilRepo.findOne({ where: { chave: 'gestor' } });
   if (!gestor) gestor = await perfilRepo.save(perfilRepo.create({ chave: 'gestor', descricao: 'Gestor' }));
 
@@ -28,9 +31,13 @@ export async function seedBase() {
     if (!exists) await statusRepo.save(statusRepo.create({ chave, descricao: chave }));
   }
 
+  const aEmail = `admin_${Date.now()}@test.com`;
   const gEmail = `gestor_${Date.now()}@test.com`;
   const tEmail = `tecnico_${Date.now()}@test.com`;
 
+  await userRepo.save(
+    userRepo.create({ nome: 'Admin', email: aEmail, senha_hash: hash, perfil: admin, ativo: true } as any)
+  );
   const gestorUser = await userRepo.save(
     userRepo.create({ nome: 'Gestor', email: gEmail, senha_hash: hash, perfil: gestor, ativo: true } as any)
   );
@@ -38,16 +45,19 @@ export async function seedBase() {
     userRepo.create({ nome: 'Tecnico', email: tEmail, senha_hash: hash, perfil: tecnico, ativo: true } as any)
   );
 
+  const adminRes = await request(app).post('/app/auth/login').send({ email: aEmail, senha: 'senha_test' });
   const gestorRes = await request(app).post('/app/auth/login').send({ email: gEmail, senha: 'senha_test' });
   const tecnicoRes = await request(app).post('/app/auth/login').send({ email: tEmail, senha: 'senha_test' });
 
   return {
+    adminToken: adminRes.body.tokenAcesso as string,
     gestorToken: gestorRes.body.tokenAcesso as string,
     tecnicoToken: tecnicoRes.body.tokenAcesso as string,
     gestorId: (gestorUser as any).id as number,
     tecnicoId: (tecnicoUser as any).id as number,
     gEmail,
-    tEmail
+    tEmail,
+    aEmail
   };
 }
 

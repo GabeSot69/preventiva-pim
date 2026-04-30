@@ -1,7 +1,8 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core'; 
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { PlanoService } from '../../services/plano.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-planos-list',
@@ -12,41 +13,37 @@ import { PlanoService } from '../../services/plano.service';
       
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Planos de manutenção</h1>
+          <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
+            Planos de Manutenção 
+            <span *ngIf="nomeEquipamento()" class="text-blue-600"> - {{ nomeEquipamento() }}</span>
+          </h1>
           <p class="text-gray-500">Gerencie as rotinas preventivas do PIM em tempo real.</p>
         </div>
-        
-        <button routerLink="/app/planos/novo" 
-                [style.background-color]="'#02464a'"
-                class="flex items-center justify-center gap-2 px-6 py-3 text-white font-bold rounded-2xl hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-[#02464a]/20">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Novo plano
-        </button>
+        <div class="flex gap-3">
+          <button *ngIf="idEquipamento()" routerLink="/app/equipamentos" 
+                  class="px-5 py-3 bg-gray-200 text-gray-700 font-bold rounded-2xl hover:bg-gray-300 transition-all">
+            Voltar
+          </button>
+          <button *ngIf="podeCriar()" routerLink="/app/planos/novo" 
+                  class="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Novo plano
+          </button>
+        </div>
       </div>
 
       <div class="flex flex-wrap gap-3 mb-8">
         <button (click)="filtroAtual.set('todos')" 
-                [class]="filtroAtual() === 'todos' ? 'bg-[#02464a] text-white shadow-md shadow-[#02464a]/20' : 'bg-white text-gray-600 border-gray-200'"
-                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all">
+                [class]="filtroAtual() === 'todos' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 border-gray-200'"
+                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm">
           Todos ({{ planos().length }})
         </button>
         <button (click)="filtroAtual.set('atrasados')" 
                 [class]="filtroAtual() === 'atrasados' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border-red-100'"
                 class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-          </svg>
-          Só Atrasados
-        </button>
-        <button (click)="filtroAtual.set('criticos')" 
-                [class]="filtroAtual() === 'criticos' ? 'bg-orange-500 text-white' : 'bg-white text-orange-600 border-orange-100'"
-                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-          </svg>
-          Críticos (7 dias)
+          ⚠️ Só Atrasados
         </button>
       </div>
 
@@ -57,37 +54,22 @@ import { PlanoService } from '../../services/plano.service';
           
           <div>
             <div class="flex justify-between items-start mb-4">
-              <span class="px-3 py-1 bg-gray-100 text-[#02464a] text-xs font-bold rounded-lg uppercase">
-                ID: {{ plano.equipamento?.id }}
+              <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg uppercase">
+                {{ plano.equipamento?.codigo || 'EQ' }}
               </span>
               <span [ngClass]="calcularStatus(plano.proxima_em).cor" 
-                    class="px-3 py-1 rounded-full text-[10px] font-black border flex items-center gap-1.5 uppercase">
-                
-                <!-- Icon mapping based on label -->
-                <ng-container [ngSwitch]="calcularStatus(plano.proxima_em).label">
-                  <svg *ngSwitchCase="'ATRASADO'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                  </svg>
-                  <svg *ngSwitchCase="'CRÍTICO'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                  </svg>
-                  <svg *ngSwitchCase="'EM DIA'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                  </svg>
-                </ng-container>
-
-                {{ calcularStatus(plano.proxima_em).label }}
+                    class="px-3 py-1 rounded-full text-[10px] font-black border flex items-center gap-1">
+                {{ calcularStatus(plano.proxima_em).icon }} {{ calcularStatus(plano.proxima_em).label }}
               </span>
             </div>
 
-            <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-[#02464a] transition-colors">
+            <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
               {{ plano.titulo }}
             </h3>
             
             <div class="mb-4 min-h-[50px]">
-              <div *ngIf="plano.descricao" class="bg-gray-50 border-l-4 border-[#02464a]/30 p-2 rounded-r-lg">
-                <label class="text-[10px] uppercase font-bold text-[#02464a]/60 block mb-1">Descrição:</label>
-                <p class="text-sm text-gray-700 italic line-clamp-2">"{{ plano.descricao }}"</p>
+              <div *ngIf="plano.descricao" class="bg-gray-50 border-l-4 border-gray-300 p-2 rounded-r-lg">
+                <p class="text-xs text-gray-700 italic line-clamp-2">"{{ plano.descricao }}"</p>
               </div>
             </div>
 
@@ -97,17 +79,22 @@ import { PlanoService } from '../../services/plano.service';
             </div>
           </div>
 
-          <button [routerLink]="['/app/execucoes/nova']" 
-                  [queryParams]="{ planoId: plano.id, titulo: plano.titulo, tecnico: plano.tecnico?.nome }"
-                  [style.background-color]="'#02464a'"
-                  class="w-full py-3 text-white font-bold rounded-xl hover:brightness-125 transition-all shadow-md shadow-[#02464a]/10 active:scale-95">
-            Registrar manutenção
-          </button>
+          <div class="flex gap-2">
+            <button [routerLink]="['/app/planos', plano.id]" 
+                    class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-all">
+                Histórico
+            </button>
+            <button [routerLink]="['/app/execucoes/nova']" 
+                    [queryParams]="{ planoId: plano.id }"
+                    class="flex-[2] py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all">
+                Executar
+            </button>
+          </div>
         </div>
       </div>
 
       <div *ngIf="planosFiltrados().length === 0" class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
-        <h3 class="text-lg font-medium text-gray-400">Nenhum plano encontrado neste filtro.</h3>
+        <h3 class="text-lg font-medium text-gray-400">Nenhum plano encontrado.</h3>
       </div>
 
     </div>
@@ -115,9 +102,18 @@ import { PlanoService } from '../../services/plano.service';
 })
 export class PlanosListComponent implements OnInit {
   private planoService = inject(PlanoService);
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
   
   planos = signal<any[]>([]);
-  filtroAtual = signal<'todos' | 'atrasados' | 'criticos'>('todos');
+  filtroAtual = signal<'todos' | 'atrasados'>('todos');
+  idEquipamento = signal<number | null>(null);
+  nomeEquipamento = signal<string | null>(null);
+
+  podeCriar() {
+    const chave = this.authService.usuario()?.perfil?.chave;
+    return ['admin', 'gestor', 'supervisor'].includes(chave);
+  }
 
   planosFiltrados = computed(() => {
     const todos = this.planos();
@@ -127,19 +123,28 @@ export class PlanosListComponent implements OnInit {
 
     return todos.filter(plano => {
       const status = this.calcularStatus(plano.proxima_em).label;
-      if (filtro === 'atrasados') return status === 'ATRASADO';
-      if (filtro === 'criticos') return status === 'CRÍTICO';
-      return true;
+      return status === 'ATRASADO';
     });
   });
 
   ngOnInit(): void {
-    this.carregarPlanos();
+    this.route.queryParams.subscribe(params => {
+      if (params['equipamentoId']) {
+        this.idEquipamento.set(Number(params['equipamentoId']));
+      }
+      this.carregarPlanos();
+    });
   }
 
   carregarPlanos(): void {
-    this.planoService.listar().subscribe({
-      next: (res) => this.planos.set(res),
+    const filtros = this.idEquipamento() ? { equipamentoId: this.idEquipamento() } : {};
+    this.planoService.listar(filtros).subscribe({
+      next: (res) => {
+        this.planos.set(res);
+        if (this.idEquipamento() && res.length > 0) {
+          this.nomeEquipamento.set(res[0].equipamento?.nome);
+        }
+      },
       error: (err) => console.error('Erro ao listar:', err)
     });
   }

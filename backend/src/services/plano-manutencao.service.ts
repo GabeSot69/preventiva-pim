@@ -36,6 +36,7 @@ export class PlanoManutencaoService {
   async listar(filtros: FiltrosPlano = {}) {
     const where: FindOptionsWhere<PlanoManutencao> = {};
     const agora = new Date();
+    agora.setHours(0, 0, 0, 0);
     const page = filtros.page || 1;
     const limit = filtros.limit || 10;
     const skip = PaginationUtils.getSkip(page, limit);
@@ -43,6 +44,7 @@ export class PlanoManutencaoService {
     where.ativo = filtros.ativo ?? true;
 
     if (filtros.equipamentoId) where.equipamento = { id: filtros.equipamentoId };
+    if (filtros.tecnicoId) where.tecnico = { id: filtros.tecnicoId };
 
     if (filtros.inicio && filtros.fim) {
       where.proxima_em = Between(new Date(filtros.inicio), new Date(filtros.fim));

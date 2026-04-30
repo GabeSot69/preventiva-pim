@@ -108,9 +108,13 @@ export class ExecucaoManutencaoService {
     });
   }
 
-  async listar(page: number = 1, limit: number = 10) {
+  async listar(page: number = 1, limit: number = 10, tecnicoId?: number) {
     const skip = PaginationUtils.getSkip(page, limit);
+    const where: any = {};
+    if (tecnicoId) where.tecnico = { id: tecnicoId };
+
     const [execs, total] = await this.repo.findAndCount({ 
+      where,
       relations: ['plano', 'tecnico', 'status', 'checklist_execucao'],
       take: limit,
       skip: skip,

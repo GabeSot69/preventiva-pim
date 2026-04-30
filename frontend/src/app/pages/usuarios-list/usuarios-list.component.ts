@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UsuarioService } from '../../services/usuario.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-usuarios-list',
@@ -15,7 +16,8 @@ import { UsuarioService } from '../../services/usuario.service';
           <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Usuários</h1>
           <p class="text-gray-500">Gerencie os usuários e permissões de acesso ao sistema.</p>
         </div>
-        <button routerLink="/app/usuarios/novo" 
+        <button *ngIf="podeEditar()"
+                routerLink="/app/usuarios/novo" 
                 [style.background-color]="'#02464a'"
                 class="flex items-center justify-center gap-2 px-6 py-3 text-white font-bold rounded-2xl hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-[#02464a]/20">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -43,7 +45,7 @@ import { UsuarioService } from '../../services/usuario.service';
               <td class="px-6 py-4 text-sm text-gray-600">{{ user.perfil?.descricao || 'N/A' }}</td>
               <td class="px-6 py-4 text-sm text-gray-600">{{ user.setor || 'N/A' }}</td>
               <td class="px-6 py-4 text-right">
-                <div class="flex justify-end gap-2">
+                <div class="flex justify-end gap-2" *ngIf="podeEditar()">
                   <a [routerLink]="['/app/usuarios/editar', user.id]"
                           class="p-2 text-gray-400 hover:text-[#02464a] hover:bg-[#02464a]/5 rounded-lg transition-all cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -57,6 +59,7 @@ import { UsuarioService } from '../../services/usuario.service';
                     </svg>
                   </button>
                 </div>
+                <div *ngIf="!podeEditar()" class="text-xs text-gray-400 italic">Somente leitura</div>
               </td>
             </tr>
             <tr *ngIf="usuarios().length === 0">
@@ -72,10 +75,16 @@ import { UsuarioService } from '../../services/usuario.service';
 })
 export class UsuariosListComponent implements OnInit {
   private service = inject(UsuarioService);
+  private authService = inject(AuthService);
   usuarios = signal<any[]>([]);
 
   ngOnInit(): void {
     this.carregar();
+  }
+
+  podeEditar() {
+    const chave = this.authService.usuario()?.perfil?.chave;
+    return chave === 'admin';
   }
 
   carregar() {
@@ -86,8 +95,7 @@ export class UsuariosListComponent implements OnInit {
 
   excluir(id: number) {
     if (confirm('Tem certeza que deseja excluir este usuário?')) {
-      // Nota: Adicionar método excluir no service se necessário
-      console.log('Excluir usuário', id);
+      this.service.excluir(id).subscribe(() => this.carregar());
     }
   }
 }
