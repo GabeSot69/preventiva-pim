@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
     <div class="p-6 max-w-6xl mx-auto min-h-screen bg-gray-50/30">
       
       <div class="mb-10">
-        <h1 class="text-4xl font-black text-gray-900 tracking-tight">Dashboard PIM</h1>
+        <h1 class="text-4xl font-black text-gray-900 tracking-tight">Dashboard</h1>
         <p class="text-gray-500 font-medium">Indicadores de Manutenção Preventiva em tempo real.</p>
       </div>
 
@@ -28,7 +28,9 @@ import { AuthService } from '../../services/auth.service';
           </div>
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
             <div class="flex items-center gap-4 mb-4">
-              <div class="p-3 bg-green-100 text-green-600 rounded-2xl">✅</div>
+              <div [ngClass]="getConformidadeStatus().bg + ' ' + getConformidadeStatus().text" class="p-3 rounded-2xl">
+                {{ getConformidadeStatus().icon }}
+              </div>
               <span class="text-xs font-bold text-gray-400 uppercase">Conformidade do Mês</span>
             </div>
             <p class="text-3xl font-black text-gray-900">{{ metricas()?.conformidadeMensal || 0 }}%</p>
@@ -55,7 +57,9 @@ import { AuthService } from '../../services/auth.service';
           </div>
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
             <div class="flex items-center gap-4 mb-4">
-              <div class="p-3 bg-green-100 text-green-600 rounded-2xl">✅</div>
+              <div [ngClass]="getConformidadeStatus().bg + ' ' + getConformidadeStatus().text" class="p-3 rounded-2xl">
+                {{ getConformidadeStatus().icon }}
+              </div>
               <span class="text-xs font-bold text-gray-400 uppercase">Conformidade</span>
             </div>
             <p class="text-3xl font-black text-gray-900">{{ metricas()?.conformidadeMensal || 0 }}%</p>
@@ -127,6 +131,14 @@ export class DashboardComponent implements OnInit {
   metricas = signal<any>(null);
   atrasadas = signal<any[]>([]);
   disponibilidade = signal<any>(null);
+
+  getConformidadeStatus() {
+    const valor = this.metricas()?.conformidadeMensal || 0;
+    if (valor <= 24) return { bg: 'bg-purple-100', text: 'text-purple-600', icon: '🟣' };
+    if (valor <= 49) return { bg: 'bg-red-100', text: 'text-red-600', icon: '🔴' };
+    if (valor <= 74) return { bg: 'bg-orange-100', text: 'text-orange-600', icon: '🟠' };
+    return { bg: 'bg-green-100', text: 'text-green-600', icon: '✅' };
+  }
 
   isSupervisor() {
     return this.authService.usuario()?.perfil?.chave === 'supervisor';

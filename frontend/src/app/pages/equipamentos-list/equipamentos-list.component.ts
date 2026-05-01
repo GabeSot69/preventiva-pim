@@ -18,11 +18,12 @@ import { PaginatorComponent } from '../../components/paginator/paginator.compone
           <p class="text-gray-500">Gerencie os ativos e máquinas cadastrados no sistema.</p>
         </div>
         <button *ngIf="podeEditar()" routerLink="/app/equipamentos/novo" 
-                class="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all active:scale-95">
+                [style.background-color]="'#02464a'"
+                class="flex items-center justify-center gap-2 px-6 py-3 text-white font-bold rounded-2xl hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-[#02464a]/20">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          Novo Equipamento
+          Novo equipamento
         </button>
       </div>
 

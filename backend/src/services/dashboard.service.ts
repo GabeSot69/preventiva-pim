@@ -26,18 +26,24 @@ export class DashboardService {
 
     // Execuções registradas no mês
     const execucoesMes = await this.execucaoRepo.createQueryBuilder('exec')
+      .leftJoinAndSelect('exec.plano', 'plano')
       .where('exec.data_execucao >= :inicio AND exec.data_execucao < :fim', { inicio: inicioMes, fim: fimMes })
       .getMany();
 
     // Conformidade = realizadas no prazo / total esperadas no mês * 100
-    // Realizadas no prazo: data_execucao <= data_prevista
-    const realizadasNoPrazo = execucoesMes.filter(e =>
-      e.data_prevista != null && e.data_execucao <= e.data_prevista
-    ).length;
+    // Realizadas no prazo: data_execucao <= data_prevista (comparando apenas datas sem hora)
+    const realizadasNoPrazo = execucoesMes.filter(e => {
+      if (!e.data_prevista) return false;
+      const dExec = new Date(e.data_execucao);
+      dExec.setHours(0,0,0,0);
+      const dPrev = new Date(e.data_prevista);
+      dPrev.setHours(0,0,0,0);
+      return dExec <= dPrev;
+    }).length;
 
     // Total esperadas: planos com data_prevista no mês (via execuções) +
     // planos ativos com proxima_em no mês ainda sem execução
-    const planosExecutadosNoMes = new Set(execucoesMes.map(e => (e as any).planoId ?? e.plano?.id));
+    const planosExecutadosNoMes = new Set(execucoesMes.map(e => e.plano?.id).filter(id => !!id));
 
     const planosEsperadosSemExecucao = await this.planoRepo.createQueryBuilder('plano')
       .where('plano.ativo = :ativo', { ativo: true })
@@ -87,6 +93,28 @@ export class DashboardService {
       },
       proxima_em: plano.proxima_em,
       dias_atraso: Math.ceil((agora.getTime() - plano.proxima_em!.getTime()) / 86400000)
+    }));
+  }
+
+  async getEmDia() {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const emDia = await this.planoRepo.createQueryBuilder('plano')
+      .leftJoinAndSelect('plano.equipamento', 'equipamento')
+      .where('plano.ativo = :ativo', { ativo: true })
+      .andWhere('plano.proxima_em >= :hoje', { hoje })
+      .getMany();
+
+    return emDia.map(plano => ({
+      id: plano.id,
+      titulo: plano.titulo,
+      equipamento: {
+        id: plano.equipamento.id,
+        nome: plano.equipamento.nome,
+        codigo: plano.equipamento.codigo
+      },
+      proxima_em: plano.proxima_em
     }));
   }
 
