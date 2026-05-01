@@ -41,6 +41,12 @@ import { PaginatorComponent } from '../../components/paginator/paginator.compone
                 class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm">
           Todos ({{ total() }})
         </button>
+        <button (click)="filtroAtual.set('em-dia')" 
+                [class]="filtroAtual() === 'em-dia' ? 'bg-green-600 text-white' : 'bg-white text-green-600 border-green-100'"
+                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm flex items-center gap-2">
+          ✅ Em Dia
+        </button>
+        <button (click)="filtroAtual.set('atrasados')" 
         <button (click)="setFiltro('atrasados')" 
                 [class]="filtroAtual() === 'atrasados' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border-red-100'"
                 class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm">
@@ -100,7 +106,7 @@ export class PlanosListComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   planos = signal<any[]>([]);
-  filtroAtual = signal<'todos' | 'atrasados'>('todos');
+  filtroAtual = signal<'todos' | 'atrasados' | 'em-dia'>('todos');
   idEquipamento = signal<number | null>(null);
   nomeEquipamento = signal<string | null>(null);
   page = signal(1);
