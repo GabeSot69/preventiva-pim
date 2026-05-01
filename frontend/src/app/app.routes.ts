@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,6 +13,10 @@ export const routes: Routes = [
   { 
     path: 'app/planos', 
     loadComponent: () => import('./pages/planos-list/planos-list.component').then(m => m.PlanosListComponent) 
+  },
+  { 
+    path: 'app/planos/editar/:id', 
+    loadComponent: () => import('./pages/planos-form/planos-form.component').then(m => m.PlanosFormComponent) 
   },
   { 
     path: 'app/planos/novo', 

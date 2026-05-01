@@ -1,4 +1,4 @@
-import { In, Repository } from 'typeorm';
+﻿import { In, Repository } from 'typeorm';
 import { ExecucaoManutencao } from '../entities/ExecucaoManutencao';
 import { AppError } from '../errors';
 import type { CriarExecucaoManutencaoDTO, AtualizarExecucaoManutencaoDTO } from '../dtos';
@@ -92,6 +92,7 @@ export class ExecucaoManutencaoService {
       exec.status = await this.getStatus(dados.status as any);
       exec.observacoes = dados.observacoes;
       exec.conformidade = dados.conformidade;
+      exec.data_prevista = plano.proxima_em ?? undefined;
       exec.checklist_execucao = await this.buildChecklist(dados.planoId, dados.checklist as any);
 
       const salvo = await manager.save(exec);

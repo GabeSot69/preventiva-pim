@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -104,7 +104,7 @@ export class CalendarioComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregar();
-    this.equipamentoService.listar(1, 100).subscribe(res => this.equipamentos.set(res));
+    this.equipamentoService.listar(1, 100).subscribe(res => this.equipamentos.set(res.data ?? []));
   }
 
   setFiltroStatus(status: 'todas' | 'atrasadas' | 'hoje' | 'semana' | 'mes') {
@@ -139,7 +139,7 @@ export class CalendarioComponent implements OnInit {
     }
 
     this.planoService.listar(filtros).subscribe(res => {
-      this.planos.set(res);
+      this.planos.set(res.data ?? []);
     });
   }
 

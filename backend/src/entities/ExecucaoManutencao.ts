@@ -1,4 +1,4 @@
-import {
+﻿import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
@@ -26,6 +26,9 @@ export class ExecucaoManutencao {
 
   @Column({ type: 'timestamptz' })
   data_execucao!: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  data_prevista?: Date;
 
   @ManyToOne(() => StatusExecucao, { eager: true })
   @JoinColumn({ name: 'status_id' })

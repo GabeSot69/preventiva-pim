@@ -85,6 +85,10 @@ export class PlanoManutencaoService {
           const { senha_hash, trocar_senha, ...tecnico } = e.tecnico as any;
           e.tecnico = tecnico;
         }
+        const checklist = e.checklist_execucao ?? [];
+        (e as any).percentual_conformidade = checklist.length
+          ? Math.round(checklist.filter((i: any) => i.conforme).length / checklist.length * 100)
+          : 100;
         return e;
       });
     }

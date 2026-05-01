@@ -11,88 +11,104 @@ export class DashboardService {
   ) {}
 
   async getMetrics() {
-    const agora = new Date();
-    agora.setHours(0, 0, 0, 0);
-    const seteDiasDepois = new Date(agora);
-    seteDiasDepois.setDate(agora.getDate() + 7);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
 
-    const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
-    const fimMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 0, 23, 59, 59);
+    const amanha = new Date(hoje);
+    amanha.setDate(hoje.getDate() + 1);
 
-    const [atrasadasCount, previstas7DiasCount, execucoesMesCount] = await Promise.all([
-      this.planoRepo.count({ where: { ativo: true, proxima_em: LessThan(agora) } }),
-      this.planoRepo.createQueryBuilder('plano')
-        .where('plano.ativo = :ativo', { ativo: true })
-        .andWhere('plano.proxima_em BETWEEN :agora AND :seteDias', { agora, seteDias: seteDiasDepois })
-        .getCount(),
-      this.execucaoRepo.createQueryBuilder('exec')
-        .where('exec.data_execucao BETWEEN :inicio AND :fim', { inicio: inicioMes, fim: fimMes })
-        .getCount()
-    ]);
+    const seteDiasDepois = new Date(hoje);
+    seteDiasDepois.setDate(hoje.getDate() + 7);
+    seteDiasDepois.setHours(23, 59, 59, 999);
 
-    // Lógica de Conformidade US05: (Realizadas no Prazo / Total Execuções) * 100
-    // Consideramos "no prazo" se data_execucao <= proxima_em (armazenado na execução se houver o campo, 
-    // ou comparando com a conformidade booleana do registro)
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1, 0, 0, 0, 0);
+    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1, 0, 0, 0, 0);
+
+    // Execuções registradas no mês
     const execucoesMes = await this.execucaoRepo.createQueryBuilder('exec')
-      .where('exec.data_execucao BETWEEN :inicio AND :fim', { inicio: inicioMes, fim: fimMes })
+      .where('exec.data_execucao >= :inicio AND exec.data_execucao < :fim', { inicio: inicioMes, fim: fimMes })
       .getMany();
 
-    const realizadasNoPrazo = execucoesMes.filter(e => e.conformidade === true).length;
-    const conformidadeMensal = execucoesMes.length > 0 
-      ? Math.round((realizadasNoPrazo / execucoesMes.length) * 100) 
+    // Conformidade = realizadas no prazo / total esperadas no mês * 100
+    // Realizadas no prazo: data_execucao <= data_prevista
+    const realizadasNoPrazo = execucoesMes.filter(e =>
+      e.data_prevista != null && e.data_execucao <= e.data_prevista
+    ).length;
+
+    // Total esperadas: planos com data_prevista no mês (via execuções) +
+    // planos ativos com proxima_em no mês ainda sem execução
+    const planosExecutadosNoMes = new Set(execucoesMes.map(e => (e as any).planoId ?? e.plano?.id));
+
+    const planosEsperadosSemExecucao = await this.planoRepo.createQueryBuilder('plano')
+      .where('plano.ativo = :ativo', { ativo: true })
+      .andWhere('plano.proxima_em >= :inicio AND plano.proxima_em < :fim', { inicio: inicioMes, fim: fimMes })
+      .getMany();
+
+    const totalEsperadas = execucoesMes.length +
+      planosEsperadosSemExecucao.filter(p => !planosExecutadosNoMes.has(p.id)).length;
+
+    const conformidadeMensal = totalEsperadas > 0
+      ? Math.round((realizadasNoPrazo / totalEsperadas) * 100)
       : 100;
+
+    const [atrasadasCount, previstas7DiasCount] = await Promise.all([
+      this.planoRepo.count({ where: { ativo: true, proxima_em: LessThan(hoje) } }),
+      this.planoRepo.createQueryBuilder('plano')
+        .where('plano.ativo = :ativo', { ativo: true })
+        .andWhere('plano.proxima_em >= :hoje AND plano.proxima_em <= :seteDias', { hoje, seteDias: seteDiasDepois })
+        .getCount(),
+    ]);
 
     return {
       atrasadas: atrasadasCount,
       previstas7Dias: previstas7DiasCount,
-      execucoesNoMes: execucoesMesCount,
-      conformidadeMensal: conformidadeMensal
+      execucoesNoMes: execucoesMes.length,
+      conformidadeMensal,
     };
   }
 
   async getAtrasadas() {
-    const agora = new Date();
-    agora.setHours(0, 0, 0, 0);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
     const atrasadas = await this.planoRepo.find({
-      where: { ativo: true, proxima_em: LessThan(agora) },
+      where: { ativo: true, proxima_em: LessThan(hoje) },
       relations: ['equipamento']
     });
 
-    const hojeParaCalculo = new Date();
-    return atrasadas.map(plano => {
-      const diffMs = hojeParaCalculo.getTime() - plano.proxima_em!.getTime();
-      return {
-        id: plano.id,
-        titulo: plano.titulo, // Nome alterado de 'plano' para 'titulo' para bater com o frontend
-        equipamento: {
-          id: plano.equipamento.id,
-          nome: plano.equipamento.nome,
-          codigo: plano.equipamento.codigo
-        },
-        proxima_em: plano.proxima_em,
-        dias_atraso: Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-      };
-    });
+    const agora = new Date();
+    return atrasadas.map(plano => ({
+      id: plano.id,
+      titulo: plano.titulo,
+      equipamento: {
+        id: plano.equipamento.id,
+        nome: plano.equipamento.nome,
+        codigo: plano.equipamento.codigo
+      },
+      proxima_em: plano.proxima_em,
+      dias_atraso: Math.ceil((agora.getTime() - plano.proxima_em!.getTime()) / 86400000)
+    }));
   }
 
   async getDisponibilidade() {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
     const total = await this.equipamentoRepo.count();
     const ativos = await this.equipamentoRepo.count({ where: { ativo: true } });
 
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
     const planosAtrasados = await this.planoRepo.find({
       where: { ativo: true, proxima_em: LessThan(hoje) },
       relations: ['equipamento']
     });
 
-    const idsEquipamentosComAtraso = new Set(planosAtrasados.map(p => p.equipamento.id));
-    const disponiveis = total - idsEquipamentosComAtraso.size;
+    const idsComAtraso = new Set(planosAtrasados.map(p => p.equipamento.id));
+    const disponiveis = total - idsComAtraso.size;
 
     return {
       totalEquipamentos: total,
       equipamentosAtivos: ativos,
-      equipamentosComAtraso: idsEquipamentosComAtraso.size,
+      equipamentosComAtraso: idsComAtraso.size,
       equipamentosDisponiveis: disponiveis,
       percentualDisponibilidade: total > 0 ? Math.round((disponiveis / total) * 100) : 0
     };

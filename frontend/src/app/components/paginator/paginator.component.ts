@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="totalPages() > 1" class="flex items-center justify-between px-2 py-4">
+    <div *ngIf="total() > 0" class="flex items-center justify-between px-2 py-4">
       <p class="text-sm text-gray-500">
         Página <b>{{ page() }}</b> de <b>{{ totalPages() }}</b> — <b>{{ total() }}</b> registros
       </p>
@@ -39,9 +39,8 @@ export class PaginatorComponent {
   pages() {
     const total = this.totalPages();
     const current = this.page();
-    const delta = 2;
     const range: number[] = [];
-    for (let i = Math.max(1, current - delta); i <= Math.min(total, current + delta); i++) {
+    for (let i = Math.max(1, current - 2); i <= Math.min(total, current + 2); i++) {
       range.push(i);
     }
     return range;

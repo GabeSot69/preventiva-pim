@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { PlanoService } from '../../services/plano.service';
@@ -41,12 +41,6 @@ import { PaginatorComponent } from '../../components/paginator/paginator.compone
                 class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm">
           Todos ({{ total() }})
         </button>
-        <button (click)="filtroAtual.set('em-dia')" 
-                [class]="filtroAtual() === 'em-dia' ? 'bg-green-600 text-white' : 'bg-white text-green-600 border-green-100'"
-                class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm flex items-center gap-2">
-          ✅ Em Dia
-        </button>
-        <button (click)="filtroAtual.set('atrasados')" 
         <button (click)="setFiltro('atrasados')" 
                 [class]="filtroAtual() === 'atrasados' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border-red-100'"
                 class="px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-sm">
@@ -84,6 +78,10 @@ import { PaginatorComponent } from '../../components/paginator/paginator.compone
                     class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-all">
               Histórico
             </button>
+            <button *ngIf="podeCriar()" [routerLink]="['/app/planos/editar', plano.id]"
+                    class="py-3 px-4 bg-blue-50 text-blue-700 font-bold rounded-xl hover:bg-blue-100 transition-all">
+              Editar
+            </button>
             <button [routerLink]="['/app/execucoes/nova']" [queryParams]="{ planoId: plano.id }"
                     class="flex-[2] py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all">
               Executar
@@ -106,7 +104,7 @@ export class PlanosListComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   planos = signal<any[]>([]);
-  filtroAtual = signal<'todos' | 'atrasados' | 'em-dia'>('todos');
+  filtroAtual = signal<'todos' | 'atrasados'>('todos');
   idEquipamento = signal<number | null>(null);
   nomeEquipamento = signal<string | null>(null);
   page = signal(1);
