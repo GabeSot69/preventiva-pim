@@ -30,7 +30,13 @@ export const TrocarSenhaSchema = z.object({
   novaSenha: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres'),
 });
 
+export const ResetarSenhaSchema = z.object({
+  email: z.string().email('Email inválido'),
+  novaSenha: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres'),
+});
+
 export type CriarUsuarioDTO = z.infer<typeof CriarUsuarioSchema>;
 export type AtualizarUsuarioDTO = z.infer<typeof AtualizarUsuarioSchema>;
 export type RegistroUsuarioDTO = z.infer<typeof RegistroUsuarioSchema>;
 export type TrocarSenhaDTO = z.infer<typeof TrocarSenhaSchema>;
+export type ResetarSenhaDTO = z.infer<typeof ResetarSenhaSchema>;

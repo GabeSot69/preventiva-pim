@@ -23,6 +23,10 @@ export class AuthService {
     );
   }
 
+  resetarSenha(data: { email: string; novaSenha: string }): Observable<any> {
+    return this.http.post<any>(`${this.API}/resetar-senha`, data);
+  }
+
   refreshToken(): Observable<any> {
     const rt = this.refreshTokenValue();
     return this.http.post<any>(`${this.API}/refresh`, { refreshToken: rt }).pipe(

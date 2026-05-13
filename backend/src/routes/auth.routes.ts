@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { UsuarioService } from '../services/usuario.service';
 import { validateBody } from '../middlewares/validate-body.middleware';
 import { LoginSchema, RefreshTokenSchema, RegistroUsuarioSchema } from '../dtos/index';
-import { TrocarSenhaSchema } from '../dtos/usuario.dto';
+import { TrocarSenhaSchema, ResetarSenhaSchema } from '../dtos/usuario.dto';
 import { autenticar } from '../middlewares/auth.middleware';
 import { AppDataSource } from '../database/index';
 import { Usuario } from '../entities/Usuario';
@@ -24,6 +24,7 @@ const authService = new AuthService(
 const controller = new AuthController(authService, usuarioService);
 
 router.post('/login', validateBody(LoginSchema), controller.login);
+router.post('/resetar-senha', validateBody(ResetarSenhaSchema), controller.resetarSenha);
 router.post('/registrar', validateBody(RegistroUsuarioSchema), controller.registrar);
 router.post('/refresh', validateBody(RefreshTokenSchema), controller.refresh);
 router.post('/logout', validateBody(RefreshTokenSchema), controller.logout);

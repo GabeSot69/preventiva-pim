@@ -126,4 +126,16 @@ export class AuthService {
     usuario.trocar_senha = false;
     await this.usuarioRepo.save(usuario);
   }
+
+  async resetarSenha(email: string, novaSenha: string) {
+    const usuario = await this.usuarioRepo.findOne({ 
+      where: { email },
+      select: ['id', 'senha_hash', 'trocar_senha']
+    });
+    if (!usuario) throw new AppError(404, 'Usuário não encontrado com este e-mail');
+
+    usuario.senha_hash = await bcrypt.hash(novaSenha, 10);
+    usuario.trocar_senha = false;
+    await this.usuarioRepo.save(usuario);
+  }
 }

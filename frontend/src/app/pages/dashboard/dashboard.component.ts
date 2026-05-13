@@ -16,71 +16,52 @@ import { AuthService } from '../../services/auth.service';
         <p class="text-gray-500 font-medium">Indicadores de Manutenção Preventiva em tempo real.</p>
       </div>
 
-      <!-- Supervisor: só atrasadas + conformidade -->
-      <ng-container *ngIf="isSupervisor(); else fullMetrics">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-red-200">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="p-3 bg-red-100 text-red-600 rounded-2xl">⚠️</div>
-              <span class="text-xs font-bold text-gray-400 uppercase">Planos Atrasados</span>
-            </div>
-            <p class="text-3xl font-black text-gray-900">{{ metricas()?.atrasadas || 0 }}</p>
+      <!-- Métricas Superiores -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10" [ngClass]="{'lg:grid-cols-5': !isSupervisor()}">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-red-200">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="p-3 bg-red-100 text-red-600 rounded-2xl">⚠️</div>
+            <span class="text-xs font-bold text-gray-400 uppercase">Planos Atrasados</span>
           </div>
-          <div class="bg-white p-6 rounded-3xl shadow-sm border-2" [ngClass]="getConformidadeStatus().border">
-            <div class="flex items-center gap-4 mb-4">
-              <div [ngClass]="getConformidadeStatus().bg + ' ' + getConformidadeStatus().text" class="p-3 rounded-2xl">
-                {{ getConformidadeStatus().icon }}
-              </div>
-              <span class="text-xs font-bold text-gray-400 uppercase">Conformidade do Mês</span>
-            </div>
-            <p class="text-3xl font-black text-gray-900">{{ metricas()?.conformidadeMensal || 0 }}%</p>
-          </div>
+          <p class="text-3xl font-black text-gray-900">{{ metricas()?.atrasadas || 0 }}</p>
         </div>
-      </ng-container>
+        
+        <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-orange-200">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl">⏳</div>
+            <span class="text-xs font-bold text-gray-400 uppercase">Próximos 7 dias</span>
+          </div>
+          <p class="text-3xl font-black text-gray-900">{{ metricas()?.previstas7Dias || 0 }}</p>
+        </div>
 
-      <!-- Admin/Gestor/Técnico: todos os cards -->
-      <ng-template #fullMetrics>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
-          <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-red-200">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="p-3 bg-red-100 text-red-600 rounded-2xl">⚠️</div>
-              <span class="text-xs font-bold text-gray-400 uppercase">Planos Atrasados</span>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border-2" [ngClass]="getConformidadeStatus().border">
+          <div class="flex items-center gap-4 mb-4">
+            <div [ngClass]="getConformidadeStatus().bg + ' ' + getConformidadeStatus().text" class="p-3 rounded-2xl">
+              {{ getConformidadeStatus().icon }}
             </div>
-            <p class="text-3xl font-black text-gray-900">{{ metricas()?.atrasadas || 0 }}</p>
+            <span class="text-xs font-bold text-gray-400 uppercase">Conformidade</span>
           </div>
-          <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-orange-200">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl">⏳</div>
-              <span class="text-xs font-bold text-gray-400 uppercase">Próximos 7 dias</span>
-            </div>
-            <p class="text-3xl font-black text-gray-900">{{ metricas()?.previstas7Dias || 0 }}</p>
-          </div>
-          <div class="bg-white p-6 rounded-3xl shadow-sm border-2" [ngClass]="getConformidadeStatus().border">
-            <div class="flex items-center gap-4 mb-4">
-              <div [ngClass]="getConformidadeStatus().bg + ' ' + getConformidadeStatus().text" class="p-3 rounded-2xl">
-                {{ getConformidadeStatus().icon }}
-              </div>
-              <span class="text-xs font-bold text-gray-400 uppercase">Conformidade</span>
-            </div>
-            <p class="text-3xl font-black text-gray-900">{{ metricas()?.conformidadeMensal || 0 }}%</p>
-          </div>
-          <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-blue-200">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl">📊</div>
-              <span class="text-xs font-bold text-gray-400 uppercase">Execuções/Mês</span>
-            </div>
-            <p class="text-3xl font-black text-gray-900">{{ metricas()?.execucoesNoMes || 0 }}</p>
-          </div>
-          <div class="bg-gray-900 p-6 rounded-3xl shadow-lg border-2 border-blue-600">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="p-3 bg-blue-500 text-white rounded-2xl text-xs font-bold">OEE</div>
-              <span class="text-xs font-bold text-blue-400 uppercase">Disponibilidade</span>
-            </div>
-            <p class="text-3xl font-black text-white">{{ disponibilidade()?.percentualDisponibilidade || 0 }}%</p>
-            <p class="text-[10px] text-blue-300 font-bold mt-2">{{ disponibilidade()?.equipamentosDisponiveis }} de {{ disponibilidade()?.totalEquipamentos }} operando</p>
-          </div>
+          <p class="text-3xl font-black text-gray-900">{{ metricas()?.conformidadeMensal || 0 }}%</p>
         </div>
-      </ng-template>
+
+        <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-blue-200">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl">📊</div>
+            <span class="text-xs font-bold text-gray-400 uppercase">Execuções/Mês</span>
+          </div>
+          <p class="text-3xl font-black text-gray-900">{{ metricas()?.execucoesNoMes || 0 }}</p>
+        </div>
+
+        <!-- Disponibilidade (OEE) - Escondido para Supervisor -->
+        <div *ngIf="!isSupervisor()" class="bg-gray-900 p-6 rounded-3xl shadow-lg border-2 border-blue-600">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="p-3 bg-blue-500 text-white rounded-2xl text-xs font-bold">OEE</div>
+            <span class="text-xs font-bold text-blue-400 uppercase">Disponibilidade</span>
+          </div>
+          <p class="text-3xl font-black text-white">{{ disponibilidade()?.percentualDisponibilidade || 0 }}%</p>
+          <p class="text-[10px] text-blue-300 font-bold mt-2">{{ disponibilidade()?.equipamentosDisponiveis }} de {{ disponibilidade()?.totalEquipamentos }} operando</p>
+        </div>
+      </div>
 
       <!-- Top 5 Equipment and Technicians -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">

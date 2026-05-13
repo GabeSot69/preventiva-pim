@@ -13,8 +13,8 @@ import { AuthService } from '../../services/auth.service';
       <div class="flex w-full max-w-5xl h-[640px] bg-white rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(2,70,74,0.1)] border border-slate-100 mx-4">
         
         <!-- Lado Esquerdo: Branding/Visual Industrial (Centralizado) -->
-        <div class="hidden lg:flex flex-col justify-between w-1/2 bg-[#02464a] p-12 text-white relative overflow-hidden">
-          <div class="relative z-10 flex items-center gap-3">
+        <div class="hidden lg:flex flex-col w-1/2 bg-[#02464a] p-12 text-white relative overflow-hidden">
+          <div class="relative z-10 flex items-center gap-3 mb-auto">
             <div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
                 <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
@@ -32,7 +32,7 @@ import { AuthService } from '../../services/auth.service';
             </svg>
           </div>
 
-          <div class="relative z-10 text-center">
+          <div class="relative z-10 text-center mb-auto">
             <h1 class="text-4xl font-extrabold leading-tight mb-6">
               Gestão inteligente de manutenções.
             </h1>
@@ -40,84 +40,145 @@ import { AuthService } from '../../services/auth.service';
               Centralize e padronize seus dados de manutenção com autoridade e precisão.
             </p>
           </div>
-          
-          <div class="relative z-10 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-md">
-            <div class="flex items-center gap-4">
-              <div class="w-10 h-10 bg-emerald-400/20 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-200">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
-                </svg>
-              </div>
-              <div>
-                <p class="text-sm font-semibold">Ambiente Seguro</p>               
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Lado Direito: Formulário -->
         <div class="w-full lg:w-1/2 p-12 flex flex-col justify-center relative bg-white">
           <div class="max-w-md mx-auto w-full">
-            <div class="mb-10">
-              <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Bem-vindo</h2>
-              <p class="text-slate-500 font-medium">Acesse sua conta para gerenciar suas manutenções.</p>
-            </div>
+            
+            <!-- Modo Login -->
+            <ng-container *ngIf="!forgotPasswordMode">
+              <div class="mb-10">
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Bem-vindo(a)!</h2>
+                <p class="text-slate-500 font-medium">Acesse sua conta para gerenciar suas manutenções.</p>
+              </div>
 
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-              <div>
-                <label for="email" class="block text-xs font-bold text-slate-700 tracking-widest mb-2">E-mail Corporativo</label>
-                <div class="relative group">
-                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                    </svg>
+              <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+                <div>
+                  <label for="email" class="block text-xs font-bold text-slate-700 tracking-widest mb-2">E-mail corporativo</label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                      </svg>
+                    </div>
+                    <input id="email" formControlName="email" type="email" required
+                      class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
+                      placeholder="nome@empresa.com.br">
                   </div>
-                  <input id="email" formControlName="email" type="email" required
-                    class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
-                    placeholder="nome@empresa.com.br">
                 </div>
-              </div>
 
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <label for="password" class="block text-xs font-bold text-slate-700 tracking-widest">Senha</label>
-                  <a href="#" class="text-xs font-bold text-[#02464a] hover:underline decoration-2 underline-offset-4">Esqueci minha senha</a>
-                </div>
-                <div class="relative group">
-                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
+                <div>
+                  <div class="flex justify-between items-center mb-2">
+                    <label for="password" class="block text-xs font-bold text-slate-700 tracking-widest">Senha</label>
+                    <button type="button" (click)="toggleForgotPassword()" class="text-xs font-bold text-[#02464a] hover:underline decoration-2 underline-offset-4">Esqueci minha senha</button>
                   </div>
-                  <input id="password" formControlName="senha" type="password" required
-                    class="block w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
-                    placeholder="••••••••">
-                  <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </button>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                    </div>
+                    <input id="password" formControlName="senha" [type]="showLoginPassword ? 'text' : 'password'" required
+                      class="block w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
+                      placeholder="••••••••">
+                    <button type="button" (click)="showLoginPassword = !showLoginPassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                      <svg *ngIf="!showLoginPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      <svg *ngIf="showLoginPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
+
+                <div class="flex items-center">
+                  <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-300 text-[#02464a] focus:ring-[#02464a]/20 transition-all cursor-pointer">
+                  <label for="remember" class="ml-2.5 text-sm font-semibold text-slate-600 cursor-pointer select-none">Lembrar acesso</label>
+                </div>
+
+                <div *ngIf="error" class="bg-red-50 text-red-600 p-4 rounded-xl text-xs font-bold border border-red-100">
+                  {{ error }}
+                </div>
+
+                <button type="submit" [disabled]="loginForm.invalid || loading"
+                  class="w-full group flex items-center justify-center gap-2 py-4 px-6 bg-[#02464a] hover:bg-[#013538] text-white font-bold rounded-xl shadow-[0_10px_20px_rgba(2,70,74,0.2)] transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]">
+                  <span *ngIf="!loading">Entrar</span>
+                  <span *ngIf="loading">Autenticando...</span>
+                  <svg *ngIf="!loading" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </button>
+              </form>
+            </ng-container>
+
+            <!-- Modo Esqueci Minha Senha -->
+            <ng-container *ngIf="forgotPasswordMode">
+              <div class="mb-10">
+                <button (click)="toggleForgotPassword()" class="flex items-center gap-2 text-xs font-bold text-[#02464a] mb-6 hover:translate-x-[-4px] transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  Voltar para o login
+                </button>
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Recuperar senha</h2>
+                <p class="text-slate-500 font-medium">Informe seu e-mail e a nova senha desejada.</p>
               </div>
 
-              <div class="flex items-center">
-                <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-300 text-[#02464a] focus:ring-[#02464a]/20 transition-all cursor-pointer">
-                <label for="remember" class="ml-2.5 text-sm font-semibold text-slate-600 cursor-pointer select-none">Lembrar acesso</label>
-              </div>
+              <form [formGroup]="resetForm" (ngSubmit)="onResetSubmit()" class="space-y-6">
+                <div>
+                  <label for="reset-email" class="block text-xs font-bold text-slate-700 tracking-widest mb-2">E-mail corporativo</label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                      </svg>
+                    </div>
+                    <input id="reset-email" formControlName="email" type="email" required
+                      class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
+                      placeholder="nome@empresa.com.br">
+                  </div>
+                </div>
 
-              <div *ngIf="error" class="bg-red-50 text-red-600 p-4 rounded-xl text-xs font-bold border border-red-100">
-                {{ error }}
-              </div>
+                <div>
+                  <label for="new-password" class="block text-xs font-bold text-slate-700 tracking-widest mb-2">Nova senha</label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                    </div>
+                    <input id="new-password" formControlName="novaSenha" [type]="showResetPassword ? 'text' : 'password'" required
+                      class="block w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
+                      placeholder="••••••••">
+                    <button type="button" (click)="showResetPassword = !showResetPassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                      <svg *ngIf="!showResetPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      <svg *ngIf="showResetPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
 
-              <button type="submit" [disabled]="loginForm.invalid || loading"
-                class="w-full group flex items-center justify-center gap-2 py-4 px-6 bg-[#02464a] hover:bg-[#013538] text-white font-bold rounded-xl shadow-[0_10px_20px_rgba(2,70,74,0.2)] transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]">
-                <span *ngIf="!loading">Entrar no Sistema</span>
-                <span *ngIf="loading">Autenticando...</span>
-                <svg *ngIf="!loading" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
-                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-                </svg>
-              </button>
-            </form>
+                <div *ngIf="error" class="bg-red-50 text-red-600 p-4 rounded-xl text-xs font-bold border border-red-100">
+                  {{ error }}
+                </div>
+
+                <div *ngIf="successMessage" class="bg-green-50 text-green-600 p-4 rounded-xl text-xs font-bold border border-green-100">
+                  {{ successMessage }}
+                </div>
+
+                <button type="submit" [disabled]="resetForm.invalid || loading"
+                  class="w-full group flex items-center justify-center gap-2 py-4 px-6 bg-[#02464a] hover:bg-[#013538] text-white font-bold rounded-xl shadow-[0_10px_20px_rgba(2,70,74,0.2)] transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]">
+                  <span *ngIf="!loading">Redefinir senha</span>
+                  <span *ngIf="loading">Processando...</span>
+                  <svg *ngIf="!loading" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </button>
+              </form>
+            </ng-container>
 
             <div class="mt-12 pt-8 border-t border-slate-100 text-center">
               <p class="text-sm font-medium text-slate-500">
@@ -137,15 +198,34 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+
   loginForm: FormGroup;
+  resetForm: FormGroup;
+
+  forgotPasswordMode = false;
   loading = false;
   error = '';
+  successMessage = '';
+
+  showLoginPassword = false;
+  showResetPassword = false;
 
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    this.resetForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      novaSenha: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  toggleForgotPassword() {
+    this.forgotPasswordMode = !this.forgotPasswordMode;
+    this.error = '';
+    this.successMessage = '';
   }
 
   onSubmit() {
@@ -157,6 +237,27 @@ export class LoginComponent {
         error: (err) => {
           this.loading = false;
           this.error = err.error?.message || 'Falha na autenticação';
+        }
+      });
+    }
+  }
+
+  onResetSubmit() {
+    if (this.resetForm.valid) {
+      this.loading = true;
+      this.error = '';
+      this.successMessage = '';
+      this.authService.resetarSenha(this.resetForm.value).subscribe({
+        next: () => {
+          this.loading = false;
+          this.successMessage = 'Senha alterada com sucesso! Você já pode fazer login.';
+          this.resetForm.reset();
+          // Opcional: voltar para login após alguns segundos
+          setTimeout(() => this.toggleForgotPassword(), 3000);
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = err.error?.message || 'Erro ao redefinir senha';
         }
       });
     }

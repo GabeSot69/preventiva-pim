@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
 import { UsuarioService } from '../services/usuario.service';
 import { LoginDTO, RefreshTokenDTO, RegistroUsuarioDTO } from '../dtos';
-import { TrocarSenhaDTO } from '../dtos/usuario.dto';
+import { TrocarSenhaDTO, ResetarSenhaDTO } from '../dtos/usuario.dto';
 
 export class AuthController {
   constructor(
@@ -20,6 +20,14 @@ export class AuthController {
     try {
       const { email, senha } = req.body as LoginDTO;
       return res.status(200).json(await this.authService.login(email, senha));
+    } catch (err) { next(err); }
+  };
+
+  resetarSenha = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, novaSenha } = req.body as ResetarSenhaDTO;
+      await this.authService.resetarSenha(email, novaSenha);
+      return res.status(204).send();
     } catch (err) { next(err); }
   };
 

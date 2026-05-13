@@ -17,11 +17,11 @@ const service = new DashboardService(
 );
 const controller = new DashboardController(service);
 
-router.get('/metricas', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getMetrics);
-router.get('/atrasadas', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getAtrasadas);
-router.get('/disponibilidade', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getDisponibilidade);
-router.get('/em-dia', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getEmDia);
-router.get('/top-tecnicos', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getTopTecnicos);
-router.get('/top-equipamentos', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getTopEquipamentos);
+router.get('/metricas', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getMetrics);
+router.get('/atrasadas', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getAtrasadas);
+router.get('/disponibilidade', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getDisponibilidade);
+router.get('/em-dia', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getEmDia);
+router.get('/top-tecnicos', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getTopTecnicos);
+router.get('/top-equipamentos', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getTopEquipamentos);
 
 export default router;
