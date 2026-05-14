@@ -120,8 +120,18 @@ export class EquipamentosListComponent implements OnInit {
   }
 
   excluir(id: number) {
-    if (confirm('Tem certeza que deseja excluir este equipamento?')) {
-      this.service.excluir(id).subscribe(() => this.carregar());
+    if (confirm('Tem certeza que deseja excluir este equipamento? Todos os planos e execuções vinculados também serão removidos.')) {
+      this.service.excluir(id).subscribe({
+        next: () => {
+          alert('Equipamento excluído com sucesso!');
+          this.carregar();
+        },
+        error: (err) => {
+          console.error('Erro ao excluir:', err);
+          const msg = err.error?.message || 'Falha ao excluir equipamento.';
+          alert(msg);
+        }
+      });
     }
   }
 }

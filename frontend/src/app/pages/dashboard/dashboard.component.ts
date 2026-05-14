@@ -34,6 +34,14 @@ import { AuthService } from '../../services/auth.service';
           <p class="text-3xl font-black text-gray-900">{{ metricas()?.previstas7Dias || 0 }}</p>
         </div>
 
+        <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-green-200">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="p-3 bg-green-100 text-green-600 rounded-2xl">✅</div>
+            <span class="text-xs font-bold text-gray-400 uppercase">Planos em Dia</span>
+          </div>
+          <p class="text-3xl font-black text-gray-900">{{ metricas()?.emDia || 0 }}</p>
+        </div>
+
         <div class="bg-white p-6 rounded-3xl shadow-sm border-2" [ngClass]="getConformidadeStatus().border">
           <div class="flex items-center gap-4 mb-4">
             <div [ngClass]="getConformidadeStatus().bg + ' ' + getConformidadeStatus().text" class="p-3 rounded-2xl">

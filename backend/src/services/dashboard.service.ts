@@ -57,17 +57,22 @@ export class DashboardService {
       ? Math.round((realizadasNoPrazo / totalEsperadas) * 100)
       : 100;
 
-    const [atrasadasCount, previstas7DiasCount] = await Promise.all([
+    const [atrasadasCount, previstas7DiasCount, emDiaCount] = await Promise.all([
       this.planoRepo.count({ where: { ativo: true, proxima_em: LessThan(hoje) } }),
       this.planoRepo.createQueryBuilder('plano')
         .where('plano.ativo = :ativo', { ativo: true })
         .andWhere('plano.proxima_em >= :hoje AND plano.proxima_em <= :seteDias', { hoje, seteDias: seteDiasDepois })
+        .getCount(),
+      this.planoRepo.createQueryBuilder('plano')
+        .where('plano.ativo = :ativo', { ativo: true })
+        .andWhere('plano.proxima_em >= :hoje', { hoje })
         .getCount(),
     ]);
 
     return {
       atrasadas: atrasadasCount,
       previstas7Dias: previstas7DiasCount,
+      emDia: emDiaCount,
       execucoesNoMes: execucoesMes.length,
       conformidadeMensal,
     };

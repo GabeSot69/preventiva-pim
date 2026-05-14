@@ -18,7 +18,7 @@ export class ExecucaoManutencao {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => PlanoManutencao, (p) => p.execucoes, { nullable: false })
+  @ManyToOne(() => PlanoManutencao, (p) => p.execucoes, { nullable: false, onDelete: 'CASCADE' })
   plano!: PlanoManutencao;
 
   @ManyToOne(() => Usuario, { nullable: true })

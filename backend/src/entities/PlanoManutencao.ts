@@ -17,7 +17,7 @@ export class PlanoManutencao {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Equipamento, (e) => e.planos, { nullable: false, eager: true })
+  @ManyToOne(() => Equipamento, (e) => e.planos, { nullable: false, eager: true, onDelete: 'CASCADE' })
   equipamento!: Equipamento;
 
   @Column({ type: 'text' })

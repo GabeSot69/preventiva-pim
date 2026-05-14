@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { EquipamentoService } from '../../services/equipamento.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-equipamentos-form',
@@ -89,17 +90,25 @@ import { EquipamentoService } from '../../services/equipamento.service';
             </ul>
           </div>
 
-          <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-50">
-            <button type="button" routerLink="/app/equipamentos" 
-                    class="px-6 py-2.5 text-sm font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition-all">
-              Cancelar
+          <div class="flex items-center justify-between gap-4 pt-6 border-t border-gray-50">
+            <button *ngIf="idEdicao && podeEditar()" type="button" (click)="excluir()" 
+                    class="px-6 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all">
+              Excluir Equipamento
             </button>
-            
-            <button type="submit" [disabled]="form.invalid" 
-                    [style.background-color]="form.invalid ? '#cbd5e1' : '#02464a'"
-                    class="px-8 py-2.5 text-white font-bold rounded-xl hover:brightness-110 hover:shadow-lg active:scale-95 transition-all disabled:cursor-not-allowed shadow-lg shadow-[#02464a]/20">
-              {{ idEdicao ? 'Salvar alterações' : 'Cadastrar equipamento' }}
-            </button>
+            <div *ngIf="!idEdicao || !podeEditar()"></div>
+
+            <div class="flex gap-4">
+              <button type="button" routerLink="/app/equipamentos" 
+                      class="px-6 py-2.5 text-sm font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition-all">
+                Cancelar
+              </button>
+              
+              <button type="submit" [disabled]="form.invalid" 
+                      [style.background-color]="form.invalid ? '#cbd5e1' : '#02464a'"
+                      class="px-8 py-2.5 text-white font-bold rounded-xl hover:brightness-110 hover:shadow-lg active:scale-95 transition-all disabled:cursor-not-allowed shadow-lg shadow-[#02464a]/20">
+                {{ idEdicao ? 'Salvar alterações' : 'Cadastrar equipamento' }}
+              </button>
+            </div>
           </div>
         </div>
       </form>
@@ -108,6 +117,7 @@ import { EquipamentoService } from '../../services/equipamento.service';
 })
 export class EquipamentosFormComponent implements OnInit {
   private service = inject(EquipamentoService);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
@@ -133,6 +143,27 @@ export class EquipamentosFormComponent implements OnInit {
       this.idEdicao = Number(id);
       this.service.obterPorId(this.idEdicao).subscribe(res => {
         this.form.patchValue(res);
+      });
+    }
+  }
+
+  podeEditar() {
+    const chave = this.authService.usuario()?.perfil?.chave;
+    return ['admin', 'gestor', 'supervisor'].includes(chave);
+  }
+
+  excluir() {
+    if (this.idEdicao && confirm('Tem certeza que deseja excluir este equipamento? Todos os planos e execuções vinculados também serão removidos.')) {
+      this.service.excluir(this.idEdicao).subscribe({
+        next: () => {
+          alert('Equipamento excluído com sucesso!');
+          this.router.navigate(['/app/equipamentos']);
+        },
+        error: (err) => {
+          console.error('Erro ao excluir:', err);
+          const msg = err.error?.message || 'Falha ao excluir equipamento.';
+          alert(msg);
+        }
       });
     }
   }
