@@ -1,4 +1,4 @@
-import { Repository, LessThan } from 'typeorm';
+import { Repository, LessThan, In } from 'typeorm';
 import { PlanoManutencao } from '../entities/PlanoManutencao';
 import { ExecucaoManutencao } from '../entities/ExecucaoManutencao';
 import { Equipamento } from '../entities/Equipamento';
@@ -176,5 +176,40 @@ export class DashboardService {
       .orderBy('total', 'DESC')
       .limit(5)
       .getRawMany();
+  }
+
+  async getRelatorio() {
+    const hoje = new Date();
+    
+    // Início da semana (domingo)
+    const inicioSemana = new Date(hoje);
+    inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+    inicioSemana.setHours(0, 0, 0, 0);
+
+    // Início do mês
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1, 0, 0, 0, 0);
+
+    const execSemana = await this.execucaoRepo.createQueryBuilder('exec')
+      .leftJoinAndSelect('exec.plano', 'plano')
+      .leftJoinAndSelect('plano.equipamento', 'equipamento')
+      .leftJoinAndSelect('exec.tecnico', 'tecnico')
+      .leftJoinAndSelect('exec.status', 'status')
+      .where('exec.data_execucao >= :inicio', { inicio: inicioSemana })
+      .orderBy('exec.data_execucao', 'DESC')
+      .getMany();
+
+    const execMes = await this.execucaoRepo.createQueryBuilder('exec')
+      .leftJoinAndSelect('exec.plano', 'plano')
+      .leftJoinAndSelect('plano.equipamento', 'equipamento')
+      .leftJoinAndSelect('exec.tecnico', 'tecnico')
+      .leftJoinAndSelect('exec.status', 'status')
+      .where('exec.data_execucao >= :inicio', { inicio: inicioMes })
+      .orderBy('exec.data_execucao', 'DESC')
+      .getMany();
+
+    return {
+      semana: execSemana,
+      mes: execMes
+    };
   }
 }

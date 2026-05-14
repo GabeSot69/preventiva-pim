@@ -23,5 +23,6 @@ router.get('/disponibilidade', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVIS
 router.get('/em-dia', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getEmDia);
 router.get('/top-tecnicos', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getTopTecnicos);
 router.get('/top-equipamentos', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR, PerfilChave.TECNICO), controller.getTopEquipamentos);
+router.get('/relatorio', autorizar(PerfilChave.ADMIN, PerfilChave.SUPERVISOR, PerfilChave.GESTOR), controller.getRelatorio);
 
 export default router;

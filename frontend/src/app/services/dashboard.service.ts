@@ -40,4 +40,8 @@ export class DashboardService {
   getTopEquipamentos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API}/top-equipamentos`, { headers: this.getHeaders() });
   }
+
+  getRelatorio(): Observable<any> {
+    return this.http.get<any>(`${this.API}/relatorio`, { headers: this.getHeaders() });
+  }
 }
