@@ -21,6 +21,15 @@ const envSchema = z.object({
   }),
   JWT_EXPIRES_IN: z.string().default('15m'),
   REFRESH_EXPIRES_DAYS: z.preprocess((val) => val ?? '7', z.string().transform(Number)),
+
+  // Configurações de E-mail
+  MAIL_HOST: z.string().optional(),
+  MAIL_PORT: z.preprocess((val) => val ?? '587', z.string().transform(Number)).optional(),
+  MAIL_USER: z.string().optional(),
+  MAIL_PASS: z.string().optional(),
+  MAIL_FROM: z.string().default('noreply@preventiva.com'),
+
+  FRONTEND_URL: z.string().default('http://localhost:4200'),
 });
 
 const _env = envSchema.safeParse(process.env);

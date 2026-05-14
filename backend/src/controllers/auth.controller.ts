@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
 import { UsuarioService } from '../services/usuario.service';
 import { LoginDTO, RefreshTokenDTO, RegistroUsuarioDTO } from '../dtos';
-import { TrocarSenhaDTO, ResetarSenhaDTO } from '../dtos/usuario.dto';
+import { TrocarSenhaDTO, ResetarSenhaDTO, SolicitarResetSenhaDTO } from '../dtos/usuario.dto';
 
 export class AuthController {
   constructor(
@@ -23,10 +23,18 @@ export class AuthController {
     } catch (err) { next(err); }
   };
 
+  solicitarResetSenha = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email } = req.body as SolicitarResetSenhaDTO;
+      await this.authService.solicitarResetSenha(email);
+      return res.status(200).json({ message: 'Se o e-mail existir, um link de redefinição será enviado.' });
+    } catch (err) { next(err); }
+  };
+
   resetarSenha = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, novaSenha } = req.body as ResetarSenhaDTO;
-      await this.authService.resetarSenha(email, novaSenha);
+      const { token, novaSenha } = req.body as ResetarSenhaDTO;
+      await this.authService.resetarSenha(token, novaSenha);
       return res.status(204).send();
     } catch (err) { next(err); }
   };

@@ -8,11 +8,13 @@ import { RefreshToken } from '../entities/RefreshToken';
 import type { JwtPayload, RefreshTokenPayload } from '../types';
 import { AppError } from '../errors';
 import { JWT_SECRET, JWT_EXP, REFRESH_EXP_DAYS } from '../config/jwt';
+import { EmailService } from './email.service';
 
 export class AuthService {
   constructor(
     private usuarioRepo: Repository<Usuario>,
-    private tokenRepo: Repository<RefreshToken>
+    private tokenRepo: Repository<RefreshToken>,
+    private emailService: EmailService
   ) {}
 
   async login(email: string, senha: string) {
@@ -127,15 +129,39 @@ export class AuthService {
     await this.usuarioRepo.save(usuario);
   }
 
-  async resetarSenha(email: string, novaSenha: string) {
+  async solicitarResetSenha(email: string) {
+    const usuario = await this.usuarioRepo.findOne({ where: { email } });
+    if (!usuario) {
+      // Por segurança, não revelamos se o e-mail existe ou não
+      return;
+    }
+
+    const token = randomBytes(20).toString('hex');
+    const expira = new Date();
+    expira.setHours(expira.getHours() + 1); // 1 hora de validade
+
+    usuario.reset_senha_token = token;
+    usuario.reset_senha_expira = expira;
+
+    await this.usuarioRepo.save(usuario);
+    await this.emailService.sendPasswordResetEmail(email, token);
+  }
+
+  async resetarSenha(token: string, novaSenha: string) {
     const usuario = await this.usuarioRepo.findOne({ 
-      where: { email },
-      select: ['id', 'senha_hash', 'trocar_senha']
+      where: { reset_senha_token: token },
+      select: ['id', 'senha_hash', 'trocar_senha', 'reset_senha_token', 'reset_senha_expira']
     });
-    if (!usuario) throw new AppError(404, 'Usuário não encontrado com este e-mail');
+
+    if (!usuario || !usuario.reset_senha_expira || usuario.reset_senha_expira < new Date()) {
+      throw new AppError(400, 'Token de redefinição inválido ou expirado');
+    }
 
     usuario.senha_hash = await bcrypt.hash(novaSenha, 10);
     usuario.trocar_senha = false;
+    usuario.reset_senha_token = undefined;
+    usuario.reset_senha_expira = undefined;
+
     await this.usuarioRepo.save(usuario);
   }
 }

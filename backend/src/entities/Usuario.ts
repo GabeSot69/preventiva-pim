@@ -36,6 +36,12 @@ export class Usuario {
   @Column({ type: 'boolean', default: false })
   trocar_senha!: boolean;
 
+  @Column({ type: 'text', nullable: true, select: false })
+  reset_senha_token?: string;
+
+  @Column({ type: 'timestamptz', nullable: true, select: false })
+  reset_senha_expira?: Date;
+
   @CreateDateColumn({ type: 'timestamptz' })
   criadoEm!: Date;
 

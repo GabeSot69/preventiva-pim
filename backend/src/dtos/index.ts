@@ -8,5 +8,17 @@ export { CriarPlanoManutencaoSchema, AtualizarPlanoManutencaoSchema } from './pl
 export type { CriarPlanoManutencaoDTO, AtualizarPlanoManutencaoDTO } from './plano-manutencao.dto';
 export { CriarExecucaoManutencaoSchema, AtualizarExecucaoManutencaoSchema } from './execucao-manutencao.dto';
 export type { CriarExecucaoManutencaoDTO, AtualizarExecucaoManutencaoDTO } from './execucao-manutencao.dto';
-export { CriarUsuarioSchema, AtualizarUsuarioSchema, RegistroUsuarioSchema } from './usuario.dto';
-export type { CriarUsuarioDTO, AtualizarUsuarioDTO, RegistroUsuarioDTO } from './usuario.dto';
+export { 
+  CriarUsuarioSchema, 
+  AtualizarUsuarioSchema, 
+  RegistroUsuarioSchema,
+  ResetarSenhaSchema,
+  SolicitarResetSenhaSchema
+} from './usuario.dto';
+export type { 
+  CriarUsuarioDTO, 
+  AtualizarUsuarioDTO, 
+  RegistroUsuarioDTO,
+  ResetarSenhaDTO,
+  SolicitarResetSenhaDTO
+} from './usuario.dto';

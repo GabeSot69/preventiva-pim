@@ -121,43 +121,21 @@ import { AuthService } from '../../services/auth.service';
                   Voltar para o login
                 </button>
                 <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Recuperar senha</h2>
-                <p class="text-slate-500 font-medium">Informe seu e-mail e a nova senha desejada.</p>
+                <p class="text-slate-500 font-medium">Informe seu e-mail para receber um link de recuperação.</p>
               </div>
 
-              <form [formGroup]="resetForm" (ngSubmit)="onResetSubmit()" class="space-y-6">
+              <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()" class="space-y-6">
                 <div>
-                  <label for="reset-email" class="block text-xs font-bold text-slate-700 tracking-widest mb-2">E-mail corporativo</label>
+                  <label for="forgot-email" class="block text-xs font-bold text-slate-700 tracking-widest mb-2">E-mail corporativo</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                       </svg>
                     </div>
-                    <input id="reset-email" formControlName="email" type="email" required
+                    <input id="forgot-email" formControlName="email" type="email" required
                       class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
                       placeholder="nome@empresa.com.br">
-                  </div>
-                </div>
-
-                <div>
-                  <label for="new-password" class="block text-xs font-bold text-slate-700 tracking-widest mb-2">Nova senha</label>
-                  <div class="relative group">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#02464a] text-slate-400 transition-colors">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                      </svg>
-                    </div>
-                    <input id="new-password" formControlName="novaSenha" [type]="showResetPassword ? 'text' : 'password'" required
-                      class="block w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-[#02464a] focus:bg-white outline-none transition-all placeholder:text-slate-400 font-medium text-sm"
-                      placeholder="••••••••">
-                    <button type="button" (click)="showResetPassword = !showResetPassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
-                      <svg *ngIf="!showResetPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
-                      </svg>
-                      <svg *ngIf="showResetPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
-                      </svg>
-                    </button>
                   </div>
                 </div>
 
@@ -169,10 +147,10 @@ import { AuthService } from '../../services/auth.service';
                   {{ successMessage }}
                 </div>
 
-                <button type="submit" [disabled]="resetForm.invalid || loading"
+                <button type="submit" [disabled]="forgotPasswordForm.invalid || loading"
                   class="w-full group flex items-center justify-center gap-2 py-4 px-6 bg-[#02464a] hover:bg-[#013538] text-white font-bold rounded-xl shadow-[0_10px_20px_rgba(2,70,74,0.2)] transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]">
-                  <span *ngIf="!loading">Redefinir senha</span>
-                  <span *ngIf="loading">Processando...</span>
+                  <span *ngIf="!loading">Enviar link de recuperação</span>
+                  <span *ngIf="loading">Enviando...</span>
                   <svg *ngIf="!loading" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
                     <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
                   </svg>
@@ -200,7 +178,7 @@ export class LoginComponent {
   private router = inject(Router);
 
   loginForm: FormGroup;
-  resetForm: FormGroup;
+  forgotPasswordForm: FormGroup;
 
   forgotPasswordMode = false;
   loading = false;
@@ -208,7 +186,6 @@ export class LoginComponent {
   successMessage = '';
 
   showLoginPassword = false;
-  showResetPassword = false;
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -216,9 +193,8 @@ export class LoginComponent {
       senha: ['', [Validators.required, Validators.minLength(6)]]
     });
 
-    this.resetForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      novaSenha: ['', [Validators.required, Validators.minLength(6)]]
+    this.forgotPasswordForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]]
     });
   }
 
@@ -242,22 +218,20 @@ export class LoginComponent {
     }
   }
 
-  onResetSubmit() {
-    if (this.resetForm.valid) {
+  onForgotPasswordSubmit() {
+    if (this.forgotPasswordForm.valid) {
       this.loading = true;
       this.error = '';
       this.successMessage = '';
-      this.authService.resetarSenha(this.resetForm.value).subscribe({
+      this.authService.solicitarResetSenha(this.forgotPasswordForm.value.email).subscribe({
         next: () => {
           this.loading = false;
-          this.successMessage = 'Senha alterada com sucesso! Você já pode fazer login.';
-          this.resetForm.reset();
-          // Opcional: voltar para login após alguns segundos
-          setTimeout(() => this.toggleForgotPassword(), 3000);
+          this.successMessage = 'Se o e-mail existir, um link de recuperação será enviado em instantes.';
+          this.forgotPasswordForm.reset();
         },
         error: (err) => {
           this.loading = false;
-          this.error = err.error?.message || 'Erro ao redefinir senha';
+          this.error = err.error?.message || 'Erro ao processar solicitação';
         }
       });
     }

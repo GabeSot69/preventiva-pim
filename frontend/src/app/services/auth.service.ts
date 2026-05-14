@@ -23,7 +23,11 @@ export class AuthService {
     );
   }
 
-  resetarSenha(data: { email: string; novaSenha: string }): Observable<any> {
+  solicitarResetSenha(email: string): Observable<any> {
+    return this.http.post<any>(`${this.API}/solicitar-reset-senha`, { email });
+  }
+
+  resetarSenha(data: { token: string; novaSenha: string }): Observable<any> {
     return this.http.post<any>(`${this.API}/resetar-senha`, data);
   }
 

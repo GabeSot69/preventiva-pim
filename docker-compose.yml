@@ -50,6 +50,12 @@ services:
       DB_NAME: ${DB_NAME:-preventiva_db}
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET:-chave_secreta_muito_longa_e_segura_para_dev}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASS: ${MAIL_PASS}
+      MAIL_FROM: ${MAIL_FROM:-noreply@preventiva.com}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:4200}
     ports:
       - "3000:3000"
     depends_on:
